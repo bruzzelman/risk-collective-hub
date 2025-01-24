@@ -58,6 +58,9 @@ export default {
           high: "#EF4444",
           critical: "#7F1D1D",
         },
+        flixbus: {
+          green: "#73D700",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

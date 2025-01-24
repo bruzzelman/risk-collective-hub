@@ -10,6 +10,7 @@ export type RiskAssessment = {
   impact: string;
   mitigation: string;
   dataClassification: string;
+  riskOwner: string;
   createdAt: Date;
 };
 

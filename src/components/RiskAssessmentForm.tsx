@@ -29,6 +29,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
     impact: "",
     mitigation: "",
     dataClassification: "",
+    riskOwner: "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -57,6 +58,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
       impact: "",
       mitigation: "",
       dataClassification: "",
+      riskOwner: "",
     });
 
     toast({
@@ -78,8 +80,8 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>New Risk Assessment</CardTitle>
+      <CardHeader className="bg-flixbus-green">
+        <CardTitle className="text-white">New Risk Assessment</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -195,6 +197,17 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="riskOwner">Risk Owner</Label>
+            <Input
+              id="riskOwner"
+              name="riskOwner"
+              value={formData.riskOwner}
+              onChange={handleChange}
+              placeholder="Enter the name of the risk owner"
+            />
           </div>
 
           <Button type="submit" className="w-full">
