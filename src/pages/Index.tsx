@@ -1,6 +1,8 @@
+
 import { useState } from "react";
 import RiskAssessmentForm from "@/components/RiskAssessmentForm";
 import RiskAssessmentTable from "@/components/RiskAssessmentTable";
+import Overview from "./Overview";
 import { RiskAssessment } from "@/types/risk";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -19,6 +21,7 @@ const Index = () => {
         <TabsList>
           <TabsTrigger value="new">New Assessment</TabsTrigger>
           <TabsTrigger value="view">View Assessments</TabsTrigger>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
         </TabsList>
         
         <TabsContent value="new" className="space-y-6">
@@ -27,6 +30,10 @@ const Index = () => {
         
         <TabsContent value="view">
           <RiskAssessmentTable assessments={assessments} />
+        </TabsContent>
+
+        <TabsContent value="overview">
+          <Overview assessments={assessments} />
         </TabsContent>
       </Tabs>
     </div>
