@@ -14,6 +14,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { RiskLevel, RISK_CATEGORIES, DATA_CLASSIFICATIONS, DIVISIONS } from "@/types/risk";
+import { Separator } from "@/components/ui/separator";
+import { PlusCircle } from "lucide-react";
 
 interface RiskAssessmentFormProps {
   onSubmit: (data: any) => void;
@@ -21,64 +23,120 @@ interface RiskAssessmentFormProps {
 
 const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
   const { toast } = useToast();
-  const [formData, setFormData] = useState({
+  const [serviceInfo, setServiceInfo] = useState({
     serviceName: "",
     serviceDescription: "",
     division: "",
+    riskOwner: "",
+  });
+
+  const [risks, setRisks] = useState<any[]>([]);
+  const [currentRisk, setCurrentRisk] = useState({
     riskCategory: "",
     riskDescription: "",
     riskLevel: "",
     impact: "",
     mitigation: "",
     dataClassification: "",
-    riskOwner: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (Object.values(formData).some((value) => !value)) {
+  const handleServiceInfoChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setServiceInfo((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleServiceSelectChange = (name: string, value: string) => {
+    setServiceInfo((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleRiskChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setCurrentRisk((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleRiskSelectChange = (name: string, value: string) => {
+    setCurrentRisk((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const addRisk = () => {
+    if (Object.values(currentRisk).some((value) => !value)) {
       toast({
         title: "Validation Error",
-        description: "Please fill in all fields",
+        description: "Please fill in all risk fields",
         variant: "destructive",
       });
       return;
     }
-    
-    onSubmit({
-      ...formData,
-      id: crypto.randomUUID(),
-      createdAt: new Date(),
-    });
-    
-    setFormData({
-      serviceName: "",
-      serviceDescription: "",
-      division: "",
+
+    setRisks((prev) => [...prev, { ...currentRisk }]);
+    setCurrentRisk({
       riskCategory: "",
       riskDescription: "",
       riskLevel: "",
       impact: "",
       mitigation: "",
       dataClassification: "",
-      riskOwner: "",
     });
 
     toast({
       title: "Success",
-      description: "Risk assessment submitted successfully",
+      description: "Risk added successfully",
     });
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (Object.values(serviceInfo).some((value) => !value)) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all service information fields",
+        variant: "destructive",
+      });
+      return;
+    }
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (risks.length === 0) {
+      toast({
+        title: "Validation Error",
+        description: "Please add at least one risk",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const submissions = risks.map((risk) => ({
+      ...serviceInfo,
+      ...risk,
+      id: crypto.randomUUID(),
+      createdAt: new Date(),
+    }));
+
+    submissions.forEach((submission) => onSubmit(submission));
+
+    setServiceInfo({
+      serviceName: "",
+      serviceDescription: "",
+      division: "",
+      riskOwner: "",
+    });
+    setRisks([]);
+    setCurrentRisk({
+      riskCategory: "",
+      riskDescription: "",
+      riskLevel: "",
+      impact: "",
+      mitigation: "",
+      dataClassification: "",
+    });
+
+    toast({
+      title: "Success",
+      description: `${submissions.length} risk assessment(s) submitted successfully`,
+    });
   };
 
   return (
@@ -88,152 +146,186 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="serviceName">Service/Product Name</Label>
-            <Input
-              id="serviceName"
-              name="serviceName"
-              value={formData.serviceName}
-              onChange={handleChange}
-              placeholder="Enter service or product name"
-            />
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Service Information</h3>
+            <div className="space-y-2">
+              <Label htmlFor="serviceName">Service/Product Name</Label>
+              <Input
+                id="serviceName"
+                name="serviceName"
+                value={serviceInfo.serviceName}
+                onChange={handleServiceInfoChange}
+                placeholder="Enter service or product name"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="division">Division</Label>
+              <Select
+                value={serviceInfo.division}
+                onValueChange={(value) => handleServiceSelectChange("division", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select division" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DIVISIONS.map((division) => (
+                    <SelectItem key={division} value={division}>
+                      {division}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="serviceDescription">Service Description</Label>
+              <Textarea
+                id="serviceDescription"
+                name="serviceDescription"
+                value={serviceInfo.serviceDescription}
+                onChange={handleServiceInfoChange}
+                placeholder="Describe the service or product"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="riskOwner">Risk Owner</Label>
+              <Input
+                id="riskOwner"
+                name="riskOwner"
+                value={serviceInfo.riskOwner}
+                onChange={handleServiceInfoChange}
+                placeholder="Enter the name of the risk owner"
+              />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="division">Division</Label>
-            <Select
-              value={formData.division}
-              onValueChange={(value) => handleSelectChange("division", value)}
+          <Separator />
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Risk Details</h3>
+            <div className="space-y-2">
+              <Label htmlFor="riskCategory">Risk Category</Label>
+              <Select
+                value={currentRisk.riskCategory}
+                onValueChange={(value) => handleRiskSelectChange("riskCategory", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select risk category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {RISK_CATEGORIES.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="riskDescription">Risk Description</Label>
+              <Textarea
+                id="riskDescription"
+                name="riskDescription"
+                value={currentRisk.riskDescription}
+                onChange={handleRiskChange}
+                placeholder="Describe the risk"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="riskLevel">Risk Level</Label>
+              <Select
+                value={currentRisk.riskLevel}
+                onValueChange={(value) => handleRiskSelectChange("riskLevel", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select risk level" />
+                </SelectTrigger>
+                <SelectContent>
+                  {["low", "medium", "high", "critical"].map((level) => (
+                    <SelectItem key={level} value={level}>
+                      {level.charAt(0).toUpperCase() + level.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="impact">Impact Assessment</Label>
+              <Textarea
+                id="impact"
+                name="impact"
+                value={currentRisk.impact}
+                onChange={handleRiskChange}
+                placeholder="Describe the potential impact"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="mitigation">Mitigation Measures</Label>
+              <Textarea
+                id="mitigation"
+                name="mitigation"
+                value={currentRisk.mitigation}
+                onChange={handleRiskChange}
+                placeholder="Describe mitigation measures"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="dataClassification">Data Classification</Label>
+              <Select
+                value={currentRisk.dataClassification}
+                onValueChange={(value) =>
+                  handleRiskSelectChange("dataClassification", value)
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select data classification" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DATA_CLASSIFICATIONS.map((classification) => (
+                    <SelectItem key={classification} value={classification}>
+                      {classification}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button
+              type="button"
+              onClick={addRisk}
+              className="w-full"
+              variant="secondary"
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Select division" />
-              </SelectTrigger>
-              <SelectContent>
-                {DIVISIONS.map((division) => (
-                  <SelectItem key={division} value={division}>
-                    {division}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <PlusCircle className="w-4 h-4 mr-2" />
+              Add Risk
+            </Button>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="serviceDescription">Service Description</Label>
-            <Textarea
-              id="serviceDescription"
-              name="serviceDescription"
-              value={formData.serviceDescription}
-              onChange={handleChange}
-              placeholder="Describe the service or product"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="riskCategory">Risk Category</Label>
-            <Select
-              value={formData.riskCategory}
-              onValueChange={(value) => handleSelectChange("riskCategory", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select risk category" />
-              </SelectTrigger>
-              <SelectContent>
-                {RISK_CATEGORIES.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="riskDescription">Risk Description</Label>
-            <Textarea
-              id="riskDescription"
-              name="riskDescription"
-              value={formData.riskDescription}
-              onChange={handleChange}
-              placeholder="Describe the risk"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="riskLevel">Risk Level</Label>
-            <Select
-              value={formData.riskLevel}
-              onValueChange={(value) => handleSelectChange("riskLevel", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select risk level" />
-              </SelectTrigger>
-              <SelectContent>
-                {["low", "medium", "high", "critical"].map((level) => (
-                  <SelectItem key={level} value={level}>
-                    {level.charAt(0).toUpperCase() + level.slice(1)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="impact">Impact Assessment</Label>
-            <Textarea
-              id="impact"
-              name="impact"
-              value={formData.impact}
-              onChange={handleChange}
-              placeholder="Describe the potential impact"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="mitigation">Mitigation Measures</Label>
-            <Textarea
-              id="mitigation"
-              name="mitigation"
-              value={formData.mitigation}
-              onChange={handleChange}
-              placeholder="Describe mitigation measures"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="dataClassification">Data Classification</Label>
-            <Select
-              value={formData.dataClassification}
-              onValueChange={(value) =>
-                handleSelectChange("dataClassification", value)
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select data classification" />
-              </SelectTrigger>
-              <SelectContent>
-                {DATA_CLASSIFICATIONS.map((classification) => (
-                  <SelectItem key={classification} value={classification}>
-                    {classification}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="riskOwner">Risk Owner</Label>
-            <Input
-              id="riskOwner"
-              name="riskOwner"
-              value={formData.riskOwner}
-              onChange={handleChange}
-              placeholder="Enter the name of the risk owner"
-            />
-          </div>
+          {risks.length > 0 && (
+            <div className="space-y-4">
+              <Separator />
+              <div className="p-4 bg-muted rounded-lg">
+                <h4 className="font-medium mb-2">Added Risks: {risks.length}</h4>
+                <ul className="list-disc pl-5 space-y-1">
+                  {risks.map((risk, index) => (
+                    <li key={index}>
+                      {risk.riskCategory} - {risk.riskLevel.toUpperCase()}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
 
           <Button type="submit" className="w-full">
-            Submit Assessment
+            Submit Assessment ({risks.length} {risks.length === 1 ? 'risk' : 'risks'})
           </Button>
         </form>
       </CardContent>
