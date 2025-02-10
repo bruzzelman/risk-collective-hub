@@ -1,9 +1,13 @@
+
 export type RiskLevel = "low" | "medium" | "high" | "critical";
+
+export type Division = "B2B" | "B2C" | "B2E";
 
 export type RiskAssessment = {
   id: string;
   serviceName: string;
   serviceDescription: string;
+  division: Division;
   riskCategory: string;
   riskDescription: string;
   riskLevel: RiskLevel;
@@ -30,3 +34,5 @@ export const DATA_CLASSIFICATIONS = [
   "Confidential",
   "Restricted",
 ] as const;
+
+export const DIVISIONS = ["B2B", "B2C", "B2E"] as const;

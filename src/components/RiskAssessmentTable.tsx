@@ -1,3 +1,4 @@
+
 import {
   Table,
   TableBody,
@@ -49,6 +50,7 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
             <TableHeader>
               <TableRow>
                 <TableHead>Service Name</TableHead>
+                <TableHead>Division</TableHead>
                 <TableHead>Risk Category</TableHead>
                 <TableHead>Risk Level</TableHead>
                 <TableHead>Data Classification</TableHead>
@@ -61,6 +63,7 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
                   <TableCell className="font-medium">
                     {assessment.serviceName}
                   </TableCell>
+                  <TableCell>{assessment.division}</TableCell>
                   <TableCell>{assessment.riskCategory}</TableCell>
                   <TableCell>
                     <RiskLevelBadge level={assessment.riskLevel} />

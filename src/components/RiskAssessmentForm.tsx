@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -12,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { RiskLevel, RISK_CATEGORIES, DATA_CLASSIFICATIONS } from "@/types/risk";
+import { RiskLevel, RISK_CATEGORIES, DATA_CLASSIFICATIONS, DIVISIONS } from "@/types/risk";
 
 interface RiskAssessmentFormProps {
   onSubmit: (data: any) => void;
@@ -23,6 +24,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
   const [formData, setFormData] = useState({
     serviceName: "",
     serviceDescription: "",
+    division: "",
     riskCategory: "",
     riskDescription: "",
     riskLevel: "",
@@ -52,6 +54,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
     setFormData({
       serviceName: "",
       serviceDescription: "",
+      division: "",
       riskCategory: "",
       riskDescription: "",
       riskLevel: "",
@@ -94,6 +97,25 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
               onChange={handleChange}
               placeholder="Enter service or product name"
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="division">Division</Label>
+            <Select
+              value={formData.division}
+              onValueChange={(value) => handleSelectChange("division", value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select division" />
+              </SelectTrigger>
+              <SelectContent>
+                {DIVISIONS.map((division) => (
+                  <SelectItem key={division} value={division}>
+                    {division}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
