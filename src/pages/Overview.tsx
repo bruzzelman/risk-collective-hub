@@ -33,8 +33,8 @@ const calculateRiskScore = (risks: RiskAssessment[]): number => {
 
 const Overview = ({ assessments }: OverviewProps) => {
   const [expandedServices, setExpandedServices] = useState<Set<string>>(new Set());
-  const [filterRiskCategory, setFilterRiskCategory] = useState<string>("");
-  const [filterDataClass, setFilterDataClass] = useState<string>("");
+  const [filterRiskCategory, setFilterRiskCategory] = useState<string>("all");
+  const [filterDataClass, setFilterDataClass] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"riskScore" | "serviceName" | "risksCount">("riskScore");
 
   const toggleService = (serviceId: string) => {
@@ -54,8 +54,8 @@ const Overview = ({ assessments }: OverviewProps) => {
       
       divisionAssessments.forEach((assessment) => {
         // Apply filters
-        if (filterRiskCategory && assessment.riskCategory !== filterRiskCategory) return;
-        if (filterDataClass && assessment.dataClassification !== filterDataClass) return;
+        if (filterRiskCategory !== "all" && assessment.riskCategory !== filterRiskCategory) return;
+        if (filterDataClass !== "all" && assessment.dataClassification !== filterDataClass) return;
         
         const existing = serviceGroups.get(assessment.serviceName) || [];
         serviceGroups.set(assessment.serviceName, [...existing, assessment]);
@@ -118,7 +118,7 @@ const Overview = ({ assessments }: OverviewProps) => {
             <SelectValue placeholder="Risk Category" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Categories</SelectItem>
+            <SelectItem value="all">All Categories</SelectItem>
             {RISK_CATEGORIES.map((category) => (
               <SelectItem key={category} value={category}>
                 {category}
@@ -132,7 +132,7 @@ const Overview = ({ assessments }: OverviewProps) => {
             <SelectValue placeholder="Data Classification" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Classifications</SelectItem>
+            <SelectItem value="all">All Classifications</SelectItem>
             {DATA_CLASSIFICATIONS.map((classification) => (
               <SelectItem key={classification} value={classification}>
                 {classification}
