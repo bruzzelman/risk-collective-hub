@@ -1,11 +1,17 @@
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import RiskLevelBadge from "@/components/RiskLevelBadge";
-import { RiskAssessment, DIVISIONS } from "@/types/risk";
+import { RiskAssessment, DIVISIONS, RISK_CATEGORIES, DATA_CLASSIFICATIONS } from "@/types/risk";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { ChevronDown, ChevronUp, Filter } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface OverviewProps {
   assessments: RiskAssessment[];
@@ -27,6 +33,9 @@ const calculateRiskScore = (risks: RiskAssessment[]): number => {
 
 const Overview = ({ assessments }: OverviewProps) => {
   const [expandedServices, setExpandedServices] = useState<Set<string>>(new Set());
+  const [filterRiskCategory, setFilterRiskCategory] = useState<string>("");
+  const [filterDataClass, setFilterDataClass] = useState<string>("");
+  const [sortBy, setSortBy] = useState<"riskScore" | "serviceName" | "risksCount">("riskScore");
 
   const toggleService = (serviceId: string) => {
     const newExpanded = new Set(expandedServices);
@@ -44,28 +53,95 @@ const Overview = ({ assessments }: OverviewProps) => {
       const serviceGroups = new Map<string, RiskAssessment[]>();
       
       divisionAssessments.forEach((assessment) => {
+        // Apply filters
+        if (filterRiskCategory && assessment.riskCategory !== filterRiskCategory) return;
+        if (filterDataClass && assessment.dataClassification !== filterDataClass) return;
+        
         const existing = serviceGroups.get(assessment.serviceName) || [];
         serviceGroups.set(assessment.serviceName, [...existing, assessment]);
       });
       
+      let services = Array.from(serviceGroups.entries()).map(([serviceName, risks]) => ({
+        serviceName,
+        risks,
+        riskScore: calculateRiskScore(risks),
+        criticalCount: risks.filter((r) => r.riskLevel === "critical").length,
+        highCount: risks.filter((r) => r.riskLevel === "high").length,
+        mediumCount: risks.filter((r) => r.riskLevel === "medium").length,
+        lowCount: risks.filter((r) => r.riskLevel === "low").length,
+      }));
+
+      // Apply sorting
+      services = services.sort((a, b) => {
+        switch (sortBy) {
+          case "riskScore":
+            return b.riskScore - a.riskScore;
+          case "serviceName":
+            return a.serviceName.localeCompare(b.serviceName);
+          case "risksCount":
+            return b.risks.length - a.risks.length;
+          default:
+            return 0;
+        }
+      });
+
       return {
         division,
-        services: Array.from(serviceGroups.entries()).map(([serviceName, risks]) => ({
-          serviceName,
-          risks,
-          riskScore: calculateRiskScore(risks),
-          criticalCount: risks.filter((r) => r.riskLevel === "critical").length,
-          highCount: risks.filter((r) => r.riskLevel === "high").length,
-          mediumCount: risks.filter((r) => r.riskLevel === "medium").length,
-          lowCount: risks.filter((r) => r.riskLevel === "low").length,
-        }))
+        services
       };
     });
-  }, [assessments]);
+  }, [assessments, filterRiskCategory, filterDataClass, sortBy]);
 
   return (
     <div className="container py-8">
       <h1 className="text-4xl font-bold mb-8">Risk Overview by Division</h1>
+      
+      <div className="flex flex-wrap gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-center gap-2">
+          <Filter className="h-4 w-4" />
+          <span className="text-sm font-medium">Filters:</span>
+        </div>
+        
+        <Select value={sortBy} onValueChange={(value: "riskScore" | "serviceName" | "risksCount") => setSortBy(value)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Sort by..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="riskScore">Risk Score</SelectItem>
+            <SelectItem value="serviceName">Service Name</SelectItem>
+            <SelectItem value="risksCount">Number of Risks</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={filterRiskCategory} onValueChange={setFilterRiskCategory}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Risk Category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">All Categories</SelectItem>
+            {RISK_CATEGORIES.map((category) => (
+              <SelectItem key={category} value={category}>
+                {category}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={filterDataClass} onValueChange={setFilterDataClass}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Data Classification" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">All Classifications</SelectItem>
+            {DATA_CLASSIFICATIONS.map((classification) => (
+              <SelectItem key={classification} value={classification}>
+                {classification}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       {groupedByDivision.map((division) => (
         <div key={division.division} className="mb-8">
           <h2 className="text-2xl font-bold mb-4">{division.division}</h2>
