@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -12,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { RiskLevel, RISK_CATEGORIES, DATA_CLASSIFICATIONS, DIVISIONS } from "@/types/risk";
+import { RiskLevel, RISK_CATEGORIES, DATA_CLASSIFICATIONS, DIVISIONS, RiskAssessment } from "@/types/risk";
 import { Separator } from "@/components/ui/separator";
 import { PlusCircle } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import RiskAssessmentForm from "@/components/RiskAssessmentForm";
 import RiskAssessmentTable from "@/components/RiskAssessmentTable";
 import Overview from "./Overview";
-import { RiskAssessment } from "@/types/risk";
+import { RiskAssessment, Division, RiskLevel } from "@/types/risk";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,10 +35,10 @@ const Index = () => {
         id: assessment.id,
         serviceName: assessment.service_name,
         serviceDescription: assessment.service_description,
-        division: assessment.division,
+        division: assessment.division as Division,
         riskCategory: assessment.risk_category,
         riskDescription: assessment.risk_description,
-        riskLevel: assessment.risk_level,
+        riskLevel: assessment.risk_level as RiskLevel,
         impact: assessment.impact,
         mitigation: assessment.mitigation,
         dataClassification: assessment.data_classification,
