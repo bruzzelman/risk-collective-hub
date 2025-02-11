@@ -31,6 +31,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
     serviceName: "",
     serviceDescription: "",
     divisionId: "",
+    teamId: "",
   });
 
   const { data: divisions = [] } = useQuery({
@@ -42,6 +43,20 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
       if (error) throw error;
       return data;
     }
+  });
+
+  const { data: teams = [] } = useQuery({
+    queryKey: ['teams', serviceInfo.divisionId],
+    queryFn: async () => {
+      if (!serviceInfo.divisionId) return [];
+      const { data, error } = await supabase
+        .from('teams')
+        .select('*')
+        .eq('division_id', serviceInfo.divisionId);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!serviceInfo.divisionId,
   });
 
   const [risks, setRisks] = useState<any[]>([]);
@@ -62,7 +77,13 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
   };
 
   const handleServiceSelectChange = (name: string, value: string) => {
-    setServiceInfo((prev) => ({ ...prev, [name]: value }));
+    setServiceInfo((prev) => {
+      // If changing division, reset team selection
+      if (name === 'divisionId') {
+        return { ...prev, [name]: value, teamId: '' };
+      }
+      return { ...prev, [name]: value };
+    });
   };
 
   const handleRiskChange = (
@@ -135,6 +156,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
         serviceName: "",
         serviceDescription: "",
         divisionId: "",
+        teamId: "",
       });
       setRisks([]);
       setCurrentRisk({
@@ -192,6 +214,26 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
                   {divisions.map((division) => (
                     <SelectItem key={division.id} value={division.id}>
                       {division.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="teamId">Team</Label>
+              <Select
+                value={serviceInfo.teamId}
+                onValueChange={(value) => handleServiceSelectChange("teamId", value)}
+                disabled={!serviceInfo.divisionId}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={serviceInfo.divisionId ? "Select team" : "Select a division first"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {teams.map((team) => (
+                    <SelectItem key={team.id} value={team.id}>
+                      {team.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
