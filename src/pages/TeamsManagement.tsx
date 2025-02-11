@@ -10,6 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, FolderPlus, Edit, Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/components/AuthProvider";
 
 interface Team {
   id: string;
@@ -31,6 +32,7 @@ const TeamsManagement = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [newTeamName, setNewTeamName] = useState("");
   const [newTeamDescription, setNewTeamDescription] = useState("");
   const [newDivisionName, setNewDivisionName] = useState("");
@@ -88,14 +90,15 @@ const TeamsManagement = () => {
   // Create team mutation
   const createTeam = useMutation({
     mutationFn: async () => {
+      if (!user) throw new Error("You must be logged in to create a team");
+
       const { data, error } = await supabase
         .from('teams')
-        .insert([
-          {
-            name: newTeamName,
-            description: newTeamDescription || null,
-          },
-        ])
+        .insert({
+          name: newTeamName,
+          description: newTeamDescription || null,
+          created_by: user.id
+        })
         .select()
         .single();
 
@@ -124,16 +127,16 @@ const TeamsManagement = () => {
   const createDivision = useMutation({
     mutationFn: async () => {
       if (!selectedTeam) throw new Error("No team selected");
+      if (!user) throw new Error("You must be logged in to create a division");
 
       const { data, error } = await supabase
         .from('divisions')
-        .insert([
-          {
-            name: newDivisionName,
-            description: newDivisionDescription || null,
-            team_id: selectedTeam,
-          },
-        ])
+        .insert({
+          name: newDivisionName,
+          description: newDivisionDescription || null,
+          team_id: selectedTeam,
+          created_by: user.id
+        })
         .select()
         .single();
 
