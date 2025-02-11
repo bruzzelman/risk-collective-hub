@@ -9,10 +9,14 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const { data: assessments = [], refetch } = useQuery({
     queryKey: ['risk-assessments'],
@@ -84,7 +88,13 @@ const Index = () => {
 
   return (
     <div className="container py-8">
-      <h1 className="text-4xl font-bold mb-8">Risk Assessment Portal</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-4xl font-bold">Risk Assessment Portal</h1>
+        <Button onClick={() => navigate("/teams")} variant="outline">
+          <Users className="mr-2 h-4 w-4" />
+          Manage Teams & Divisions
+        </Button>
+      </div>
       
       <Tabs defaultValue="new" className="space-y-6">
         <TabsList>

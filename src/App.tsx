@@ -8,6 +8,7 @@ import { AuthProvider } from "@/components/AuthProvider";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import TeamsManagement from "./pages/TeamsManagement";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Index />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/teams"
+              element={
+                <ProtectedRoute>
+                  <TeamsManagement />
                 </ProtectedRoute>
               }
             />
