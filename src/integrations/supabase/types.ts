@@ -9,12 +9,57 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      divisions: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          name: string
+          parent_division_id: string | null
+          team_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          name: string
+          parent_division_id?: string | null
+          team_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          name?: string
+          parent_division_id?: string | null
+          team_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "divisions_parent_division_id_fkey"
+            columns: ["parent_division_id"]
+            isOneToOne: false
+            referencedRelation: "divisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "divisions_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       risk_assessments: {
         Row: {
           created_at: string
           created_by: string
           data_classification: string
-          division: string
+          division_id: string | null
           id: string
           impact: string
           mitigation: string
@@ -29,7 +74,7 @@ export type Database = {
           created_at?: string
           created_by: string
           data_classification: string
-          division: string
+          division_id?: string | null
           id?: string
           impact: string
           mitigation: string
@@ -44,7 +89,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           data_classification?: string
-          division?: string
+          division_id?: string | null
           id?: string
           impact?: string
           mitigation?: string
@@ -54,6 +99,38 @@ export type Database = {
           risk_owner?: string
           service_description?: string
           service_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "risk_assessments_division_id_fkey"
+            columns: ["division_id"]
+            isOneToOne: false
+            referencedRelation: "divisions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          name?: string
         }
         Relationships: []
       }
