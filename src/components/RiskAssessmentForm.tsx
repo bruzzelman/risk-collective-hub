@@ -19,7 +19,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 
 interface RiskAssessmentFormProps {
-  onSubmit: (data: any) => void;
+  onSubmit: (data: Omit<RiskAssessment, "id" | "createdAt">) => void;
 }
 
 const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
@@ -110,18 +110,13 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
     }
 
     try {
-      const submissions = risks.map((risk) => ({
-        ...serviceInfo,
-        ...risk,
-        risk_owner: user?.email,
-        created_by: user?.id,
-      }));
-
-      const { error } = await supabase
-        .from('risk_assessments')
-        .insert(submissions);
-
-      if (error) throw error;
+      risks.forEach((risk) => {
+        onSubmit({
+          ...serviceInfo,
+          ...risk,
+          riskOwner: user?.email || '',
+        });
+      });
 
       setServiceInfo({
         serviceName: "",
@@ -140,10 +135,8 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
 
       toast({
         title: "Success",
-        description: `${submissions.length} risk assessment(s) submitted successfully`,
+        description: `${risks.length} risk assessment(s) submitted successfully`,
       });
-
-      submissions.forEach((submission) => onSubmit(submission));
     } catch (error) {
       toast({
         title: "Error",
