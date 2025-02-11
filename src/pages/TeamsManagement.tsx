@@ -8,23 +8,23 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, FolderPlus, Edit, Trash } from "lucide-react";
+import { Plus, FolderPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
-
-interface Team {
-  id: string;
-  name: string;
-  description: string | null;
-  created_at: string;
-}
 
 interface Division {
   id: string;
   name: string;
   description: string | null;
-  team_id: string;
   parent_division_id: string | null;
+  created_at: string;
+}
+
+interface Team {
+  id: string;
+  name: string;
+  description: string | null;
+  division_id: string;
   created_at: string;
 }
 
@@ -33,44 +33,19 @@ const TeamsManagement = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [newTeamName, setNewTeamName] = useState("");
-  const [newTeamDescription, setNewTeamDescription] = useState("");
   const [newDivisionName, setNewDivisionName] = useState("");
   const [newDivisionDescription, setNewDivisionDescription] = useState("");
-  const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
+  const [newTeamName, setNewTeamName] = useState("");
+  const [newTeamDescription, setNewTeamDescription] = useState("");
+  const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
 
-  // Fetch teams
-  const { data: teams = [] } = useQuery({
-    queryKey: ['teams'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('teams')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        toast({
-          title: "Error fetching teams",
-          description: error.message,
-          variant: "destructive",
-        });
-        return [];
-      }
-
-      return data as Team[];
-    },
-  });
-
-  // Fetch divisions for selected team
+  // Fetch divisions
   const { data: divisions = [] } = useQuery({
-    queryKey: ['divisions', selectedTeam],
+    queryKey: ['divisions'],
     queryFn: async () => {
-      if (!selectedTeam) return [];
-
       const { data, error } = await supabase
         .from('divisions')
         .select('*')
-        .eq('team_id', selectedTeam)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -84,49 +59,37 @@ const TeamsManagement = () => {
 
       return data as Division[];
     },
-    enabled: !!selectedTeam,
   });
 
-  // Create team mutation
-  const createTeam = useMutation({
-    mutationFn: async () => {
-      if (!user) throw new Error("You must be logged in to create a team");
+  // Fetch teams for selected division
+  const { data: teams = [] } = useQuery({
+    queryKey: ['teams', selectedDivision],
+    queryFn: async () => {
+      if (!selectedDivision) return [];
 
       const { data, error } = await supabase
         .from('teams')
-        .insert({
-          name: newTeamName,
-          description: newTeamDescription || null,
-          created_by: user.id
-        })
-        .select()
-        .single();
+        .select('*')
+        .eq('division_id', selectedDivision)
+        .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      return data;
+      if (error) {
+        toast({
+          title: "Error fetching teams",
+          description: error.message,
+          variant: "destructive",
+        });
+        return [];
+      }
+
+      return data as Team[];
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['teams'] });
-      setNewTeamName("");
-      setNewTeamDescription("");
-      toast({
-        title: "Success",
-        description: "Team created successfully",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error creating team",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
+    enabled: !!selectedDivision,
   });
 
   // Create division mutation
   const createDivision = useMutation({
     mutationFn: async () => {
-      if (!selectedTeam) throw new Error("No team selected");
       if (!user) throw new Error("You must be logged in to create a division");
 
       const { data, error } = await supabase
@@ -134,7 +97,6 @@ const TeamsManagement = () => {
         .insert({
           name: newDivisionName,
           description: newDivisionDescription || null,
-          team_id: selectedTeam,
           created_by: user.id
         })
         .select()
@@ -144,7 +106,7 @@ const TeamsManagement = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['divisions', selectedTeam] });
+      queryClient.invalidateQueries({ queryKey: ['divisions'] });
       setNewDivisionName("");
       setNewDivisionDescription("");
       toast({
@@ -161,48 +123,86 @@ const TeamsManagement = () => {
     },
   });
 
+  // Create team mutation
+  const createTeam = useMutation({
+    mutationFn: async () => {
+      if (!selectedDivision) throw new Error("No division selected");
+      if (!user) throw new Error("You must be logged in to create a team");
+
+      const { data, error } = await supabase
+        .from('teams')
+        .insert({
+          name: newTeamName,
+          description: newTeamDescription || null,
+          division_id: selectedDivision,
+          created_by: user.id
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['teams', selectedDivision] });
+      setNewTeamName("");
+      setNewTeamDescription("");
+      toast({
+        title: "Success",
+        description: "Team created successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error creating team",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   return (
     <div className="container py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-bold">Teams & Divisions Management</h1>
+        <h1 className="text-4xl font-bold">Divisions & Teams Management</h1>
         <Button onClick={() => navigate("/")} variant="outline">
           Back to Dashboard
         </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Teams Section */}
+        {/* Divisions Section */}
         <Card>
           <CardHeader>
-            <CardTitle>Teams</CardTitle>
+            <CardTitle>Divisions</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="teamName">New Team Name</Label>
+                <Label htmlFor="divisionName">New Division Name</Label>
                 <Input
-                  id="teamName"
-                  value={newTeamName}
-                  onChange={(e) => setNewTeamName(e.target.value)}
-                  placeholder="Enter team name"
+                  id="divisionName"
+                  value={newDivisionName}
+                  onChange={(e) => setNewDivisionName(e.target.value)}
+                  placeholder="Enter division name"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="teamDescription">Description (optional)</Label>
+                <Label htmlFor="divisionDescription">Description (optional)</Label>
                 <Input
-                  id="teamDescription"
-                  value={newTeamDescription}
-                  onChange={(e) => setNewTeamDescription(e.target.value)}
-                  placeholder="Enter team description"
+                  id="divisionDescription"
+                  value={newDivisionDescription}
+                  onChange={(e) => setNewDivisionDescription(e.target.value)}
+                  placeholder="Enter division description"
                 />
               </div>
               <Button
-                onClick={() => createTeam.mutate()}
-                disabled={!newTeamName || createTeam.isPending}
+                onClick={() => createDivision.mutate()}
+                disabled={!newDivisionName || createDivision.isPending}
                 className="w-full"
               >
-                <Plus className="mr-2 h-4 w-4" />
-                Create Team
+                <FolderPlus className="mr-2 h-4 w-4" />
+                Create Division
               </Button>
             </div>
 
@@ -216,18 +216,18 @@ const TeamsManagement = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {teams.map((team) => (
+                  {divisions.map((division) => (
                     <TableRow
-                      key={team.id}
-                      className={selectedTeam === team.id ? "bg-muted" : ""}
+                      key={division.id}
+                      className={selectedDivision === division.id ? "bg-muted" : ""}
                     >
-                      <TableCell>{team.name}</TableCell>
-                      <TableCell>{team.description}</TableCell>
+                      <TableCell>{division.name}</TableCell>
+                      <TableCell>{division.description}</TableCell>
                       <TableCell>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setSelectedTeam(team.id)}
+                          onClick={() => setSelectedDivision(division.id)}
                         >
                           Select
                         </Button>
@@ -240,39 +240,39 @@ const TeamsManagement = () => {
           </CardContent>
         </Card>
 
-        {/* Divisions Section */}
+        {/* Teams Section */}
         <Card>
           <CardHeader>
-            <CardTitle>Divisions</CardTitle>
+            <CardTitle>Teams</CardTitle>
           </CardHeader>
           <CardContent>
-            {selectedTeam ? (
+            {selectedDivision ? (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="divisionName">New Division Name</Label>
+                  <Label htmlFor="teamName">New Team Name</Label>
                   <Input
-                    id="divisionName"
-                    value={newDivisionName}
-                    onChange={(e) => setNewDivisionName(e.target.value)}
-                    placeholder="Enter division name"
+                    id="teamName"
+                    value={newTeamName}
+                    onChange={(e) => setNewTeamName(e.target.value)}
+                    placeholder="Enter team name"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="divisionDescription">Description (optional)</Label>
+                  <Label htmlFor="teamDescription">Description (optional)</Label>
                   <Input
-                    id="divisionDescription"
-                    value={newDivisionDescription}
-                    onChange={(e) => setNewDivisionDescription(e.target.value)}
-                    placeholder="Enter division description"
+                    id="teamDescription"
+                    value={newTeamDescription}
+                    onChange={(e) => setNewTeamDescription(e.target.value)}
+                    placeholder="Enter team description"
                   />
                 </div>
                 <Button
-                  onClick={() => createDivision.mutate()}
-                  disabled={!newDivisionName || createDivision.isPending}
+                  onClick={() => createTeam.mutate()}
+                  disabled={!newTeamName || createTeam.isPending}
                   className="w-full"
                 >
-                  <FolderPlus className="mr-2 h-4 w-4" />
-                  Create Division
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Team
                 </Button>
 
                 <div className="mt-4">
@@ -284,10 +284,10 @@ const TeamsManagement = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {divisions.map((division) => (
-                        <TableRow key={division.id}>
-                          <TableCell>{division.name}</TableCell>
-                          <TableCell>{division.description}</TableCell>
+                      {teams.map((team) => (
+                        <TableRow key={team.id}>
+                          <TableCell>{team.name}</TableCell>
+                          <TableCell>{team.description}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -296,7 +296,7 @@ const TeamsManagement = () => {
               </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
-                Select a team to manage its divisions
+                Select a division to manage its teams
               </div>
             )}
           </CardContent>
@@ -307,3 +307,4 @@ const TeamsManagement = () => {
 };
 
 export default TeamsManagement;
+

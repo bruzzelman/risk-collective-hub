@@ -17,7 +17,6 @@ export type Database = {
           id: string
           name: string
           parent_division_id: string | null
-          team_id: string
         }
         Insert: {
           created_at?: string
@@ -26,7 +25,6 @@ export type Database = {
           id?: string
           name: string
           parent_division_id?: string | null
-          team_id: string
         }
         Update: {
           created_at?: string
@@ -35,7 +33,6 @@ export type Database = {
           id?: string
           name?: string
           parent_division_id?: string | null
-          team_id?: string
         }
         Relationships: [
           {
@@ -43,13 +40,6 @@ export type Database = {
             columns: ["parent_division_id"]
             isOneToOne: false
             referencedRelation: "divisions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "divisions_team_id_fkey"
-            columns: ["team_id"]
-            isOneToOne: false
-            referencedRelation: "teams"
             referencedColumns: ["id"]
           },
         ]
@@ -136,6 +126,7 @@ export type Database = {
           created_at: string
           created_by: string
           description: string | null
+          division_id: string | null
           id: string
           name: string
         }
@@ -143,6 +134,7 @@ export type Database = {
           created_at?: string
           created_by: string
           description?: string | null
+          division_id?: string | null
           id?: string
           name: string
         }
@@ -150,10 +142,19 @@ export type Database = {
           created_at?: string
           created_by?: string
           description?: string | null
+          division_id?: string | null
           id?: string
           name?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "teams_division_id_fkey"
+            columns: ["division_id"]
+            isOneToOne: false
+            referencedRelation: "divisions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
