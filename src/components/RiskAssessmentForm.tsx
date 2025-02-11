@@ -13,11 +13,12 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { RiskLevel, RISK_CATEGORIES, DATA_CLASSIFICATIONS, DIVISIONS, RiskAssessment } from "@/types/risk";
+import { RiskLevel, RISK_CATEGORIES, DATA_CLASSIFICATIONS, RiskAssessment } from "@/types/risk";
 import { Separator } from "@/components/ui/separator";
 import { PlusCircle } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 interface RiskAssessmentFormProps {
   onSubmit: (data: Omit<RiskAssessment, "id" | "createdAt">) => void;
@@ -29,7 +30,18 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
   const [serviceInfo, setServiceInfo] = useState({
     serviceName: "",
     serviceDescription: "",
-    division: "",
+    divisionId: "",
+  });
+
+  const { data: divisions = [] } = useQuery({
+    queryKey: ['divisions'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('divisions')
+        .select('*');
+      if (error) throw error;
+      return data;
+    }
   });
 
   const [risks, setRisks] = useState<any[]>([]);
@@ -122,7 +134,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
       setServiceInfo({
         serviceName: "",
         serviceDescription: "",
-        division: "",
+        divisionId: "",
       });
       setRisks([]);
       setCurrentRisk({
@@ -168,18 +180,18 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="division">Division</Label>
+              <Label htmlFor="divisionId">Division</Label>
               <Select
-                value={serviceInfo.division}
-                onValueChange={(value) => handleServiceSelectChange("division", value)}
+                value={serviceInfo.divisionId}
+                onValueChange={(value) => handleServiceSelectChange("divisionId", value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select division" />
                 </SelectTrigger>
                 <SelectContent>
-                  {DIVISIONS.map((division) => (
-                    <SelectItem key={division} value={division}>
-                      {division}
+                  {divisions.map((division) => (
+                    <SelectItem key={division.id} value={division.id}>
+                      {division.name}
                     </SelectItem>
                   ))}
                 </SelectContent>

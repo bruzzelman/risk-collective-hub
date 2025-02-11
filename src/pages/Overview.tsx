@@ -1,8 +1,7 @@
-
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import RiskLevelBadge from "@/components/RiskLevelBadge";
-import { RiskAssessment, DIVISIONS, RISK_CATEGORIES, DATA_CLASSIFICATIONS } from "@/types/risk";
+import { RiskAssessment } from "@/types/risk";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronUp, Filter } from "lucide-react";
 import {
@@ -12,6 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface OverviewProps {
   assessments: RiskAssessment[];
@@ -37,6 +38,17 @@ const Overview = ({ assessments }: OverviewProps) => {
   const [filterDataClass, setFilterDataClass] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"riskScore" | "serviceName" | "risksCount">("riskScore");
 
+  const { data: divisions = [] } = useQuery({
+    queryKey: ['divisions'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('divisions')
+        .select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
+
   const toggleService = (serviceId: string) => {
     const newExpanded = new Set(expandedServices);
     if (newExpanded.has(serviceId)) {
@@ -48,8 +60,8 @@ const Overview = ({ assessments }: OverviewProps) => {
   };
 
   const groupedByDivision = useMemo(() => {
-    return DIVISIONS.map(division => {
-      const divisionAssessments = assessments.filter(a => a.division === division);
+    return divisions.map(division => {
+      const divisionAssessments = assessments.filter(a => a.divisionId === division.id);
       const serviceGroups = new Map<string, RiskAssessment[]>();
       
       divisionAssessments.forEach((assessment) => {
@@ -86,11 +98,12 @@ const Overview = ({ assessments }: OverviewProps) => {
       });
 
       return {
-        division,
+        name: division.name,
+        id: division.id,
         services
       };
     });
-  }, [assessments, filterRiskCategory, filterDataClass, sortBy]);
+  }, [assessments, filterRiskCategory, filterDataClass, sortBy, divisions]);
 
   return (
     <div className="container py-8">
@@ -143,8 +156,8 @@ const Overview = ({ assessments }: OverviewProps) => {
       </div>
 
       {groupedByDivision.map((division) => (
-        <div key={division.division} className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">{division.division}</h2>
+        <div key={division.id} className="mb-8">
+          <h2 className="text-2xl font-bold mb-4">{division.name}</h2>
           <div className="grid gap-6">
             {division.services.map((service) => (
               <Card key={service.serviceName}>

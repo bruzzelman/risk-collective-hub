@@ -17,6 +17,8 @@ import { Input } from "@/components/ui/input";
 import RiskLevelBadge from "./RiskLevelBadge";
 import { RiskAssessment } from "@/types/risk";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface RiskAssessmentTableProps {
   assessments: RiskAssessment[];
@@ -25,9 +27,26 @@ interface RiskAssessmentTableProps {
 const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
 
+  const { data: divisions = [] } = useQuery({
+    queryKey: ['divisions'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('divisions')
+        .select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const getDivisionName = (divisionId: string | undefined) => {
+    if (!divisionId) return "N/A";
+    const division = divisions.find(d => d.id === divisionId);
+    return division ? division.name : "Unknown";
+  };
+
   const filteredAssessments = assessments.filter((assessment) =>
     Object.values(assessment).some((value) =>
-      value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
 
@@ -63,7 +82,7 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
                   <TableCell className="font-medium">
                     {assessment.serviceName}
                   </TableCell>
-                  <TableCell>{assessment.division}</TableCell>
+                  <TableCell>{getDivisionName(assessment.divisionId)}</TableCell>
                   <TableCell>{assessment.riskCategory}</TableCell>
                   <TableCell>
                     <RiskLevelBadge level={assessment.riskLevel} />
