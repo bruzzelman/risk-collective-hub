@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -16,6 +15,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { RiskLevel, RISK_CATEGORIES, DATA_CLASSIFICATIONS, DIVISIONS } from "@/types/risk";
 import { Separator } from "@/components/ui/separator";
 import { PlusCircle } from "lucide-react";
+import { useAuth } from "@/components/AuthProvider";
+import { supabase } from "@/integrations/supabase/client";
 
 interface RiskAssessmentFormProps {
   onSubmit: (data: any) => void;
@@ -23,11 +24,11 @@ interface RiskAssessmentFormProps {
 
 const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [serviceInfo, setServiceInfo] = useState({
     serviceName: "",
     serviceDescription: "",
     division: "",
-    riskOwner: "",
   });
 
   const [risks, setRisks] = useState<any[]>([]);
@@ -88,7 +89,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (Object.values(serviceInfo).some((value) => !value)) {
       toast({
@@ -108,35 +109,48 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
       return;
     }
 
-    const submissions = risks.map((risk) => ({
-      ...serviceInfo,
-      ...risk,
-      id: crypto.randomUUID(),
-      createdAt: new Date(),
-    }));
+    try {
+      const submissions = risks.map((risk) => ({
+        ...serviceInfo,
+        ...risk,
+        risk_owner: user?.email,
+        created_by: user?.id,
+      }));
 
-    submissions.forEach((submission) => onSubmit(submission));
+      const { error } = await supabase
+        .from('risk_assessments')
+        .insert(submissions);
 
-    setServiceInfo({
-      serviceName: "",
-      serviceDescription: "",
-      division: "",
-      riskOwner: "",
-    });
-    setRisks([]);
-    setCurrentRisk({
-      riskCategory: "",
-      riskDescription: "",
-      riskLevel: "",
-      impact: "",
-      mitigation: "",
-      dataClassification: "",
-    });
+      if (error) throw error;
 
-    toast({
-      title: "Success",
-      description: `${submissions.length} risk assessment(s) submitted successfully`,
-    });
+      setServiceInfo({
+        serviceName: "",
+        serviceDescription: "",
+        division: "",
+      });
+      setRisks([]);
+      setCurrentRisk({
+        riskCategory: "",
+        riskDescription: "",
+        riskLevel: "",
+        impact: "",
+        mitigation: "",
+        dataClassification: "",
+      });
+
+      toast({
+        title: "Success",
+        description: `${submissions.length} risk assessment(s) submitted successfully`,
+      });
+
+      submissions.forEach((submission) => onSubmit(submission));
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to submit risk assessments. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -186,17 +200,6 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
                 value={serviceInfo.serviceDescription}
                 onChange={handleServiceInfoChange}
                 placeholder="Describe the service or product"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="riskOwner">Risk Owner</Label>
-              <Input
-                id="riskOwner"
-                name="riskOwner"
-                value={serviceInfo.riskOwner}
-                onChange={handleServiceInfoChange}
-                placeholder="Enter the name of the risk owner"
               />
             </div>
           </div>

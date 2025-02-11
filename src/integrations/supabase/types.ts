@@ -9,7 +9,54 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      risk_assessments: {
+        Row: {
+          created_at: string
+          created_by: string
+          data_classification: string
+          division: string
+          id: string
+          impact: string
+          mitigation: string
+          risk_category: string
+          risk_description: string
+          risk_level: string
+          risk_owner: string
+          service_description: string
+          service_name: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          data_classification: string
+          division: string
+          id?: string
+          impact: string
+          mitigation: string
+          risk_category: string
+          risk_description: string
+          risk_level: string
+          risk_owner: string
+          service_description: string
+          service_name: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          data_classification?: string
+          division?: string
+          id?: string
+          impact?: string
+          mitigation?: string
+          risk_category?: string
+          risk_description?: string
+          risk_level?: string
+          risk_owner?: string
+          service_description?: string
+          service_name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
