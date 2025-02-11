@@ -1,7 +1,8 @@
+
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import RiskLevelBadge from "@/components/RiskLevelBadge";
-import { RiskAssessment } from "@/types/risk";
+import { RiskAssessment, RISK_CATEGORIES, DATA_CLASSIFICATIONS } from "@/types/risk";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronUp, Filter } from "lucide-react";
 import {
