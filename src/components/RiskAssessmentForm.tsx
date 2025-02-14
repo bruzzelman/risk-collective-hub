@@ -186,6 +186,33 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
     });
   };
 
+  const removeRisk = (serviceId: string, riskIndex: number) => {
+    setRisks((prev) => ({
+      ...prev,
+      [serviceId]: prev[serviceId].filter((_, index) => index !== riskIndex),
+    }));
+
+    toast({
+      title: "Success",
+      description: "Risk removed successfully",
+    });
+  };
+
+  const editRisk = (serviceId: string, riskIndex: number) => {
+    const riskToEdit = risks[serviceId][riskIndex];
+    setCurrentRisk(riskToEdit);
+    
+    // Remove the risk that's being edited
+    setRisks((prev) => ({
+      ...prev,
+      [serviceId]: prev[serviceId].filter((_, index) => index !== riskIndex),
+    }));
+
+    toast({
+      description: "You can now edit the risk details",
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -492,13 +519,41 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
                         <h4 className="font-medium mb-2">
                           Added Risks: {risks[selectedServiceId].length}
                         </h4>
-                        <ul className="list-disc pl-5 space-y-1">
+                        <div className="space-y-2">
                           {risks[selectedServiceId].map((risk, index) => (
-                            <li key={index}>
-                              {risk.riskCategory} - {risk.riskLevel.toUpperCase()}
-                            </li>
+                            <div
+                              key={index}
+                              className="flex items-center justify-between p-2 rounded-lg border bg-card"
+                            >
+                              <div className="flex-1">
+                                <p className="font-medium">
+                                  {risk.riskCategory} - {risk.riskLevel.toUpperCase()}
+                                </p>
+                                <p className="text-sm text-muted-foreground truncate">
+                                  {risk.riskDescription}
+                                </p>
+                              </div>
+                              <div className="flex gap-2 ml-4">
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => editRisk(selectedServiceId, index)}
+                                >
+                                  Edit
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => removeRisk(selectedServiceId, index)}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </div>
                           ))}
-                        </ul>
+                        </div>
                       </div>
                     )}
                   </>
