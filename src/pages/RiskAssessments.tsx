@@ -22,25 +22,17 @@ interface RiskAssessmentsProps {
 
 // Calculate security score based on risk levels and mitigation
 const calculateSecurityScore = (risks: RiskAssessment[]): number => {
-  if (risks.length === 0) return 100;
+  if (risks.length === 0) return 0;
 
   const weights = {
-    critical: 25, // Critical risks reduce score by 25%
-    high: 15,     // High risks reduce score by 15%
-    medium: 10,   // Medium risks reduce score by 10%
-    low: 5        // Low risks reduce score by 5%
+    critical: 4,  // Critical risks count as 4 points
+    high: 3,      // High risks count as 3 points
+    medium: 2,    // Medium risks count as 2 points
+    low: 1        // Low risks count as 1 point
   };
 
-  // Start with perfect score of 100
-  let score = 100;
-  
-  // Subtract weighted points for each risk
-  risks.forEach(risk => {
-    score -= weights[risk.riskLevel];
-  });
-
-  // Ensure score doesn't go below 0
-  return Math.max(0, Math.round(score));
+  // Sum up all risk points
+  return risks.reduce((total, risk) => total + weights[risk.riskLevel], 0);
 };
 
 const RiskAssessments = ({ assessments }: RiskAssessmentsProps) => {
@@ -153,9 +145,9 @@ const RiskAssessments = ({ assessments }: RiskAssessmentsProps) => {
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-green-600";
-    if (score >= 60) return "text-yellow-600";
-    if (score >= 40) return "text-orange-600";
+    if (score <= 3) return "text-green-600";
+    if (score <= 6) return "text-yellow-600";
+    if (score <= 9) return "text-orange-600";
     return "text-red-600";
   };
 
@@ -202,9 +194,9 @@ const RiskAssessments = ({ assessments }: RiskAssessmentsProps) => {
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right">
-                    <div className="text-sm font-medium">Security Score</div>
+                    <div className="text-sm font-medium">Risk Score</div>
                     <div className={`text-2xl font-bold ${getScoreColor(securityScore)}`}>
-                      {securityScore}%
+                      {securityScore}
                     </div>
                   </div>
                   <CollapsibleTrigger className="p-2 hover:bg-gray-100 rounded-full transition-colors">
@@ -225,9 +217,9 @@ const RiskAssessments = ({ assessments }: RiskAssessmentsProps) => {
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="text-lg font-semibold">{team.name}</h3>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-muted-foreground">Security Score:</span>
+                          <span className="text-sm text-muted-foreground">Risk Score:</span>
                           <span className={`font-bold ${getScoreColor(teamScore)}`}>
-                            {teamScore}%
+                            {teamScore}
                           </span>
                         </div>
                       </div>
