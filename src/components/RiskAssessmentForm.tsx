@@ -46,11 +46,14 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
 
   // Query existing services
   const { data: services = [], refetch: refetchServices } = useQuery({
-    queryKey: ['services'],
+    queryKey: ['services', currentService.teamId],
     queryFn: async () => {
+      if (!currentService.teamId) return [];
+      
       const { data, error } = await supabase
         .from('services')
         .select('*')
+        .eq('team_id', currentService.teamId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -64,6 +67,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
         createdBy: service.created_by,
       }));
     },
+    enabled: !!currentService.teamId,
   });
 
   // Query existing risks for selected service
@@ -367,7 +371,10 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
                 <Label htmlFor="teamId">Team</Label>
                 <Select
                   value={currentService.teamId}
-                  onValueChange={(value) => handleServiceSelectChange("teamId", value)}
+                  onValueChange={(value) => {
+                    handleServiceSelectChange("teamId", value);
+                    setSelectedServiceId(null); // Reset selected service when team changes
+                  }}
                   disabled={!currentService.divisionId}
                 >
                   <SelectTrigger>
@@ -391,6 +398,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
                   value={currentService.name}
                   onChange={handleServiceChange}
                   placeholder="Enter service or product name"
+                  disabled={!currentService.teamId}
                 />
               </div>
 
@@ -402,6 +410,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
                   value={currentService.description}
                   onChange={handleServiceChange}
                   placeholder="Describe the service or product"
+                  disabled={!currentService.teamId}
                 />
               </div>
 
@@ -410,6 +419,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
                 onClick={addService}
                 className="w-full"
                 variant="secondary"
+                disabled={!currentService.teamId}
               >
                 <PlusCircle className="w-4 h-4 mr-2" />
                 Add Service
@@ -419,46 +429,57 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
             <Separator />
 
             {/* Services List */}
-            <div className="space-y-4">
-              <h4 className="font-medium">Added Services</h4>
-              <div className="space-y-2">
-                {services.map((service) => (
-                  <div
-                    key={service.id}
-                    className={`p-4 rounded-lg border ${
-                      selectedServiceId === service.id ? 'bg-muted border-primary' : 'bg-card'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="space-y-1">
-                        <h5 className="font-medium">{service.name}</h5>
-                        <p className="text-sm text-muted-foreground">
-                          Risks: {serviceRisks.length}
-                        </p>
-                      </div>
-                      <div className="space-x-2">
-                        <Button
-                          type="button"
-                          variant={selectedServiceId === service.id ? "default" : "ghost"}
-                          size="sm"
-                          onClick={() => setSelectedServiceId(service.id)}
-                        >
-                          {selectedServiceId === service.id ? "Selected" : "Select"}
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeService(service.id)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+            {currentService.teamId ? (
+              <div className="space-y-4">
+                <h4 className="font-medium">Added Services</h4>
+                <div className="space-y-2">
+                  {services.map((service) => (
+                    <div
+                      key={service.id}
+                      className={`p-4 rounded-lg border ${
+                        selectedServiceId === service.id ? 'bg-muted border-primary' : 'bg-card'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="space-y-1">
+                          <h5 className="font-medium">{service.name}</h5>
+                          <p className="text-sm text-muted-foreground">
+                            Risks: {serviceRisks.length}
+                          </p>
+                        </div>
+                        <div className="space-x-2">
+                          <Button
+                            type="button"
+                            variant={selectedServiceId === service.id ? "default" : "ghost"}
+                            size="sm"
+                            onClick={() => setSelectedServiceId(service.id)}
+                          >
+                            {selectedServiceId === service.id ? "Selected" : "Select"}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeService(service.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                  {services.length === 0 && (
+                    <div className="text-center py-4 text-muted-foreground">
+                      No services added for this team yet
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="text-center py-4 text-muted-foreground">
+                Select a team to view and manage services
+              </div>
+            )}
           </div>
 
           {/* Right Column - Risk Details */}
