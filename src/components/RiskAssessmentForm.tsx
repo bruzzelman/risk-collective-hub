@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -111,13 +110,13 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
     setServices((prev) => [...prev, newService]);
     setRisks((prev) => ({ ...prev, [serviceId]: [] }));
     setSelectedServiceId(serviceId);
-    setCurrentService({
+    // Only reset the service name and description, keep division and team
+    setCurrentService((prev) => ({
+      ...prev,
       id: "",
       serviceName: "",
       serviceDescription: "",
-      divisionId: "",
-      teamId: "",
-    });
+    }));
 
     toast({
       title: "Success",
