@@ -37,9 +37,7 @@ const Index = () => {
 
       return data.map((assessment): RiskAssessment => ({
         id: assessment.id,
-        serviceName: assessment.service_name,
-        serviceDescription: assessment.service_description,
-        divisionId: assessment.division_id,
+        serviceId: assessment.service_id,
         riskCategory: assessment.risk_category,
         riskDescription: assessment.risk_description,
         riskLevel: assessment.risk_level as RiskAssessment['riskLevel'],
@@ -51,40 +49,6 @@ const Index = () => {
       }));
     },
   });
-
-  const handleSubmit = async (data: Omit<RiskAssessment, "id" | "createdAt">) => {
-    const { error } = await supabase
-      .from('risk_assessments')
-      .insert({
-        service_name: data.serviceName,
-        service_description: data.serviceDescription,
-        division_id: data.divisionId,
-        risk_category: data.riskCategory,
-        risk_description: data.riskDescription,
-        risk_level: data.riskLevel,
-        impact: data.impact,
-        mitigation: data.mitigation,
-        data_classification: data.dataClassification,
-        risk_owner: user?.email,
-        created_by: user?.id,
-      });
-
-    if (error) {
-      toast({
-        title: "Error submitting assessment",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    toast({
-      title: "Success",
-      description: "Risk assessment submitted successfully",
-    });
-    
-    refetch();
-  };
 
   return (
     <div className="container py-8">
@@ -104,7 +68,7 @@ const Index = () => {
         </TabsList>
         
         <TabsContent value="new" className="space-y-6">
-          <RiskAssessmentForm onSubmit={handleSubmit} />
+          <RiskAssessmentForm onSubmit={() => refetch()} />
         </TabsContent>
         
         <TabsContent value="view">

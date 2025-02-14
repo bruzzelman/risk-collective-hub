@@ -27,27 +27,26 @@ interface RiskAssessmentTableProps {
 const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data: divisions = [] } = useQuery({
-    queryKey: ['divisions'],
+  const { data: services = [] } = useQuery({
+    queryKey: ['services'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('divisions')
+        .from('services')
         .select('*');
       if (error) throw error;
       return data;
     }
   });
 
-  const getDivisionName = (divisionId: string | undefined) => {
-    if (!divisionId) return "N/A";
-    const division = divisions.find(d => d.id === divisionId);
-    return division ? division.name : "Unknown";
+  const getServiceName = (serviceId: string) => {
+    const service = services.find(s => s.id === serviceId);
+    return service ? service.name : "Unknown Service";
   };
 
   const filteredAssessments = assessments.filter((assessment) =>
     Object.values(assessment).some((value) =>
       value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    ) || getServiceName(assessment.serviceId).toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -69,10 +68,10 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
             <TableHeader>
               <TableRow>
                 <TableHead>Service Name</TableHead>
-                <TableHead>Division</TableHead>
                 <TableHead>Risk Category</TableHead>
                 <TableHead>Risk Level</TableHead>
                 <TableHead>Data Classification</TableHead>
+                <TableHead>Risk Owner</TableHead>
                 <TableHead>Date Added</TableHead>
               </TableRow>
             </TableHeader>
@@ -80,14 +79,14 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
               {filteredAssessments.map((assessment) => (
                 <TableRow key={assessment.id}>
                   <TableCell className="font-medium">
-                    {assessment.serviceName}
+                    {getServiceName(assessment.serviceId)}
                   </TableCell>
-                  <TableCell>{getDivisionName(assessment.divisionId)}</TableCell>
                   <TableCell>{assessment.riskCategory}</TableCell>
                   <TableCell>
                     <RiskLevelBadge level={assessment.riskLevel} />
                   </TableCell>
                   <TableCell>{assessment.dataClassification}</TableCell>
+                  <TableCell>{assessment.riskOwner}</TableCell>
                   <TableCell>
                     {assessment.createdAt.toLocaleDateString()}
                   </TableCell>

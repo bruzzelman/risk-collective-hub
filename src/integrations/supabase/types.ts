@@ -78,8 +78,7 @@ export type Database = {
           risk_description: string
           risk_level: string
           risk_owner: string
-          service_description: string
-          service_name: string
+          service_id: string | null
         }
         Insert: {
           created_at?: string
@@ -93,8 +92,7 @@ export type Database = {
           risk_description: string
           risk_level: string
           risk_owner: string
-          service_description: string
-          service_name: string
+          service_id?: string | null
         }
         Update: {
           created_at?: string
@@ -108,8 +106,7 @@ export type Database = {
           risk_description?: string
           risk_level?: string
           risk_owner?: string
-          service_description?: string
-          service_name?: string
+          service_id?: string | null
         }
         Relationships: [
           {
@@ -117,6 +114,58 @@ export type Database = {
             columns: ["division_id"]
             isOneToOne: false
             referencedRelation: "divisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "risk_assessments_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      services: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          division_id: string | null
+          id: string
+          name: string
+          team_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          division_id?: string | null
+          id?: string
+          name: string
+          team_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          division_id?: string | null
+          id?: string
+          name?: string
+          team_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_division_id_fkey"
+            columns: ["division_id"]
+            isOneToOne: false
+            referencedRelation: "divisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
             referencedColumns: ["id"]
           },
         ]

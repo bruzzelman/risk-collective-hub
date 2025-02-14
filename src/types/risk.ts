@@ -19,11 +19,19 @@ export type Division = {
   createdBy: string;
 };
 
+export type Service = {
+  id: string;
+  name: string;
+  description?: string;
+  divisionId?: string;
+  teamId?: string;
+  createdAt: Date;
+  createdBy: string;
+};
+
 export type RiskAssessment = {
   id: string;
-  serviceName: string;
-  serviceDescription: string;
-  divisionId?: string;
+  serviceId: string;
   riskCategory: string;
   riskDescription: string;
   riskLevel: RiskLevel;
