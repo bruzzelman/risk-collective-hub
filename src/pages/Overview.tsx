@@ -39,6 +39,81 @@ const Overview = ({ assessments }: OverviewProps) => {
   const [filterDataClass, setFilterDataClass] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"riskScore" | "serviceName" | "risksCount">("riskScore");
 
+  const { data: services = [] } = useQuery({
+    queryKey: ['services'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('services')
+        .select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const groupedByDivision = useMemo(() => {
+    // First, group assessments by service
+    const serviceGroups = new Map<string, RiskAssessment[]>();
+    
+    assessments.forEach((assessment) => {
+      // Apply filters
+      if (filterRiskCategory !== "all" && assessment.riskCategory !== filterRiskCategory) return;
+      if (filterDataClass !== "all" && assessment.dataClassification !== filterDataClass) return;
+      
+      const existing = serviceGroups.get(assessment.serviceId) || [];
+      serviceGroups.set(assessment.serviceId, [...existing, assessment]);
+    });
+
+    // Get service details
+    const serviceDetails = Array.from(serviceGroups.entries()).map(([serviceId, risks]) => {
+      const service = services.find(s => s.id === serviceId) || { 
+        id: serviceId, 
+        name: "Unknown Service", 
+        division_id: null 
+      };
+
+      return {
+        serviceId,
+        serviceName: service.name,
+        divisionId: service.division_id,
+        risks,
+        riskScore: calculateRiskScore(risks),
+        criticalCount: risks.filter((r) => r.riskLevel === "critical").length,
+        highCount: risks.filter((r) => r.riskLevel === "high").length,
+        mediumCount: risks.filter((r) => r.riskLevel === "medium").length,
+        lowCount: risks.filter((r) => r.riskLevel === "low").length,
+      };
+    });
+
+    // Sort services
+    const sortedServices = serviceDetails.sort((a, b) => {
+      switch (sortBy) {
+        case "riskScore":
+          return b.riskScore - a.riskScore;
+        case "serviceName":
+          return a.serviceName.localeCompare(b.serviceName);
+        case "risksCount":
+          return b.risks.length - a.risks.length;
+        default:
+          return 0;
+      }
+    });
+
+    // Group by division
+    const divisionGroups = new Map<string | null, typeof serviceDetails>();
+    sortedServices.forEach(service => {
+      const existing = divisionGroups.get(service.divisionId) || [];
+      divisionGroups.set(service.divisionId, [...existing, service]);
+    });
+
+    return Array.from(divisionGroups.entries()).map(([divisionId, services]) => ({
+      name: divisionId ? 
+        (divisions.find(d => d.id === divisionId)?.name || "Unknown Division") : 
+        "Unassigned",
+      id: divisionId || "unassigned",
+      services
+    }));
+  }, [assessments, filterRiskCategory, filterDataClass, sortBy, services]);
+
   const { data: divisions = [] } = useQuery({
     queryKey: ['divisions'],
     queryFn: async () => {
@@ -59,52 +134,6 @@ const Overview = ({ assessments }: OverviewProps) => {
     }
     setExpandedServices(newExpanded);
   };
-
-  const groupedByDivision = useMemo(() => {
-    return divisions.map(division => {
-      const divisionAssessments = assessments.filter(a => a.divisionId === division.id);
-      const serviceGroups = new Map<string, RiskAssessment[]>();
-      
-      divisionAssessments.forEach((assessment) => {
-        // Apply filters
-        if (filterRiskCategory !== "all" && assessment.riskCategory !== filterRiskCategory) return;
-        if (filterDataClass !== "all" && assessment.dataClassification !== filterDataClass) return;
-        
-        const existing = serviceGroups.get(assessment.serviceName) || [];
-        serviceGroups.set(assessment.serviceName, [...existing, assessment]);
-      });
-      
-      let services = Array.from(serviceGroups.entries()).map(([serviceName, risks]) => ({
-        serviceName,
-        risks,
-        riskScore: calculateRiskScore(risks),
-        criticalCount: risks.filter((r) => r.riskLevel === "critical").length,
-        highCount: risks.filter((r) => r.riskLevel === "high").length,
-        mediumCount: risks.filter((r) => r.riskLevel === "medium").length,
-        lowCount: risks.filter((r) => r.riskLevel === "low").length,
-      }));
-
-      // Apply sorting
-      services = services.sort((a, b) => {
-        switch (sortBy) {
-          case "riskScore":
-            return b.riskScore - a.riskScore;
-          case "serviceName":
-            return a.serviceName.localeCompare(b.serviceName);
-          case "risksCount":
-            return b.risks.length - a.risks.length;
-          default:
-            return 0;
-        }
-      });
-
-      return {
-        name: division.name,
-        id: division.id,
-        services
-      };
-    });
-  }, [assessments, filterRiskCategory, filterDataClass, sortBy, divisions]);
 
   return (
     <div className="container py-8">
@@ -161,7 +190,7 @@ const Overview = ({ assessments }: OverviewProps) => {
           <h2 className="text-2xl font-bold mb-4">{division.name}</h2>
           <div className="grid gap-6">
             {division.services.map((service) => (
-              <Card key={service.serviceName}>
+              <Card key={service.serviceId}>
                 <CardHeader className="bg-flixbus-green">
                   <CardTitle className="text-white">
                     {service.serviceName}
@@ -169,8 +198,8 @@ const Overview = ({ assessments }: OverviewProps) => {
                 </CardHeader>
                 <CardContent className="pt-6">
                   <Collapsible
-                    open={expandedServices.has(service.serviceName)}
-                    onOpenChange={() => toggleService(service.serviceName)}
+                    open={expandedServices.has(service.serviceId)}
+                    onOpenChange={() => toggleService(service.serviceId)}
                   >
                     <div className="flex items-center justify-between mb-4">
                       <div className="space-y-2">
@@ -182,7 +211,7 @@ const Overview = ({ assessments }: OverviewProps) => {
                         </div>
                       </div>
                       <CollapsibleTrigger className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                        {expandedServices.has(service.serviceName) ? (
+                        {expandedServices.has(service.serviceId) ? (
                           <ChevronUp className="h-6 w-6" />
                         ) : (
                           <ChevronDown className="h-6 w-6" />
