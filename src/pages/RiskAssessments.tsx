@@ -1,4 +1,3 @@
-
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import RiskLevelBadge from "@/components/RiskLevelBadge";
@@ -26,17 +25,22 @@ const calculateSecurityScore = (risks: RiskAssessment[]): number => {
   if (risks.length === 0) return 100;
 
   const weights = {
-    critical: 4,
-    high: 3,
-    medium: 2,
-    low: 1
+    critical: 25, // Critical risks reduce score by 25%
+    high: 15,     // High risks reduce score by 15%
+    medium: 10,   // Medium risks reduce score by 10%
+    low: 5        // Low risks reduce score by 5%
   };
 
-  const maxScore = risks.length * 4; // Maximum possible risk score
-  const totalRiskScore = risks.reduce((acc, risk) => acc + weights[risk.riskLevel], 0);
+  // Start with perfect score of 100
+  let score = 100;
   
-  // Convert to a 0-100 scale where 100 is best (no risks)
-  return Math.round(((maxScore - totalRiskScore) / maxScore) * 100);
+  // Subtract weighted points for each risk
+  risks.forEach(risk => {
+    score -= weights[risk.riskLevel];
+  });
+
+  // Ensure score doesn't go below 0
+  return Math.max(0, Math.round(score));
 };
 
 const RiskAssessments = ({ assessments }: RiskAssessmentsProps) => {
