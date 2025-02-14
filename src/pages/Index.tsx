@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import RiskAssessmentForm from "@/components/RiskAssessmentForm";
 import RiskAssessmentTable from "@/components/RiskAssessmentTable";
 import Overview from "./Overview";
+import RiskAssessments from "./RiskAssessments";
 import { RiskAssessment } from "@/types/risk";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
@@ -72,7 +73,7 @@ const Index = () => {
         </TabsContent>
         
         <TabsContent value="view">
-          <RiskAssessmentTable assessments={assessments} />
+          <RiskAssessments assessments={assessments} />
         </TabsContent>
 
         <TabsContent value="overview">
