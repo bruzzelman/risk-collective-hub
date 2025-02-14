@@ -50,6 +50,28 @@ const Overview = ({ assessments }: OverviewProps) => {
     }
   });
 
+  const { data: divisions = [] } = useQuery({
+    queryKey: ['divisions'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('divisions')
+        .select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: teams = [] } = useQuery({
+    queryKey: ['teams'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('teams')
+        .select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
+
   const groupedByDivision = useMemo(() => {
     // First, group assessments by service
     const serviceGroups = new Map<string, RiskAssessment[]>();
@@ -68,13 +90,17 @@ const Overview = ({ assessments }: OverviewProps) => {
       const service = services.find(s => s.id === serviceId) || { 
         id: serviceId, 
         name: "Unknown Service", 
-        division_id: null 
+        division_id: null,
+        team_id: null
       };
+      const team = teams.find(t => t.id === service.team_id);
 
       return {
         serviceId,
         serviceName: service.name,
         divisionId: service.division_id,
+        teamId: service.team_id,
+        teamName: team?.name || "Unknown Team",
         risks,
         riskScore: calculateRiskScore(risks),
         criticalCount: risks.filter((r) => r.riskLevel === "critical").length,
@@ -110,20 +136,9 @@ const Overview = ({ assessments }: OverviewProps) => {
         (divisions.find(d => d.id === divisionId)?.name || "Unknown Division") : 
         "Unassigned",
       id: divisionId || "unassigned",
-      services
+      services: services.sort((a, b) => a.teamName.localeCompare(b.teamName)) // Sort services by team name
     }));
-  }, [assessments, filterRiskCategory, filterDataClass, sortBy, services]);
-
-  const { data: divisions = [] } = useQuery({
-    queryKey: ['divisions'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('divisions')
-        .select('*');
-      if (error) throw error;
-      return data;
-    }
-  });
+  }, [assessments, filterRiskCategory, filterDataClass, sortBy, services, teams, divisions]);
 
   const toggleService = (serviceId: string) => {
     const newExpanded = new Set(expandedServices);
@@ -192,8 +207,9 @@ const Overview = ({ assessments }: OverviewProps) => {
             {division.services.map((service) => (
               <Card key={service.serviceId}>
                 <CardHeader className="bg-flixbus-green">
-                  <CardTitle className="text-white">
-                    {service.serviceName}
+                  <CardTitle className="text-white flex justify-between items-center">
+                    <span>{service.serviceName}</span>
+                    <span className="text-sm font-normal">Team: {service.teamName}</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-6">

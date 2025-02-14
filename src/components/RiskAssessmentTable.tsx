@@ -38,16 +38,53 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
     }
   });
 
-  const getServiceName = (serviceId: string) => {
+  const { data: divisions = [] } = useQuery({
+    queryKey: ['divisions'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('divisions')
+        .select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: teams = [] } = useQuery({
+    queryKey: ['teams'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('teams')
+        .select('*');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const getServiceDetails = (serviceId: string) => {
     const service = services.find(s => s.id === serviceId);
-    return service ? service.name : "Unknown Service";
+    if (!service) return { name: "Unknown Service", division: "Unknown Division", team: "Unknown Team" };
+
+    const division = divisions.find(d => d.id === service.division_id);
+    const team = teams.find(t => t.id === service.team_id);
+
+    return {
+      name: service.name,
+      division: division?.name || "Unknown Division",
+      team: team?.name || "Unknown Team"
+    };
   };
 
-  const filteredAssessments = assessments.filter((assessment) =>
-    Object.values(assessment).some((value) =>
-      value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    ) || getServiceName(assessment.serviceId).toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredAssessments = assessments.filter((assessment) => {
+    const serviceDetails = getServiceDetails(assessment.serviceId);
+    return (
+      Object.values(assessment).some((value) =>
+        value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      ) ||
+      serviceDetails.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      serviceDetails.division.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      serviceDetails.team.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   return (
     <Card className="w-full">
@@ -68,6 +105,8 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
             <TableHeader>
               <TableRow>
                 <TableHead>Service Name</TableHead>
+                <TableHead>Division</TableHead>
+                <TableHead>Team</TableHead>
                 <TableHead>Risk Category</TableHead>
                 <TableHead>Risk Level</TableHead>
                 <TableHead>Data Classification</TableHead>
@@ -76,22 +115,27 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredAssessments.map((assessment) => (
-                <TableRow key={assessment.id}>
-                  <TableCell className="font-medium">
-                    {getServiceName(assessment.serviceId)}
-                  </TableCell>
-                  <TableCell>{assessment.riskCategory}</TableCell>
-                  <TableCell>
-                    <RiskLevelBadge level={assessment.riskLevel} />
-                  </TableCell>
-                  <TableCell>{assessment.dataClassification}</TableCell>
-                  <TableCell>{assessment.riskOwner}</TableCell>
-                  <TableCell>
-                    {assessment.createdAt.toLocaleDateString()}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {filteredAssessments.map((assessment) => {
+                const serviceDetails = getServiceDetails(assessment.serviceId);
+                return (
+                  <TableRow key={assessment.id}>
+                    <TableCell className="font-medium">
+                      {serviceDetails.name}
+                    </TableCell>
+                    <TableCell>{serviceDetails.division}</TableCell>
+                    <TableCell>{serviceDetails.team}</TableCell>
+                    <TableCell>{assessment.riskCategory}</TableCell>
+                    <TableCell>
+                      <RiskLevelBadge level={assessment.riskLevel} />
+                    </TableCell>
+                    <TableCell>{assessment.dataClassification}</TableCell>
+                    <TableCell>{assessment.riskOwner}</TableCell>
+                    <TableCell>
+                      {assessment.createdAt.toLocaleDateString()}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>
