@@ -70,6 +70,7 @@ export type Database = {
           created_at: string
           created_by: string
           data_classification: string
+          data_interface: string
           division_id: string | null
           id: string
           impact: string
@@ -84,6 +85,7 @@ export type Database = {
           created_at?: string
           created_by: string
           data_classification: string
+          data_interface?: string
           division_id?: string | null
           id?: string
           impact: string
@@ -98,6 +100,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           data_classification?: string
+          data_interface?: string
           division_id?: string | null
           id?: string
           impact?: string

@@ -71,7 +71,6 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
     enabled: !!currentService.teamId,
   });
 
-  // Query existing risks for selected service
   const { data: serviceRisks = [], refetch: refetchRisks } = useQuery({
     queryKey: ['risks', selectedServiceId],
     queryFn: async () => {
