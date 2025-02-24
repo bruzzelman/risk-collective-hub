@@ -44,6 +44,8 @@ export type RiskAssessment = {
   riskOwner: string;
   createdAt: Date;
   divisionId?: string;
+  hasGlobalRevenueImpact: boolean;
+  globalRevenueImpactHours?: number;
 };
 
 export const RISK_CATEGORIES = [

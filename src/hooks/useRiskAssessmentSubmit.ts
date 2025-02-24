@@ -37,6 +37,8 @@ export const useRiskAssessmentSubmit = (
           mitigation: values.mitigation,
           data_classification: values.dataClassification,
           risk_owner: values.riskOwner,
+          has_global_revenue_impact: values.hasGlobalRevenueImpact,
+          global_revenue_impact_hours: values.globalRevenueImpactHours,
           created_by: user.id
         });
 

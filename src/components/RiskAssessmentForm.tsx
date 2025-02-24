@@ -7,6 +7,9 @@ import { SelectField } from "./forms/SelectField";
 import { TextField } from "./forms/TextField";
 import { useServices } from "@/hooks/useServices";
 import { useRiskAssessmentSubmit } from "@/hooks/useRiskAssessmentSubmit";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { useWatch } from "react-hook-form";
 
 interface RiskAssessmentFormProps {
   onSubmit: (data: Omit<RiskAssessment, "id" | "createdAt">) => void;
@@ -15,10 +18,18 @@ interface RiskAssessmentFormProps {
 
 const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps) => {
   const form = useForm<Omit<RiskAssessment, "id" | "createdAt">>({
-    defaultValues: initialValues,
+    defaultValues: {
+      hasGlobalRevenueImpact: false,
+      ...initialValues,
+    },
   });
   const { data: services = [] } = useServices();
   const handleSubmit = initialValues ? onSubmit : useRiskAssessmentSubmit(form, onSubmit);
+  
+  const hasGlobalRevenueImpact = useWatch({
+    control: form.control,
+    name: "hasGlobalRevenueImpact",
+  });
 
   return (
     <Form {...form}>
@@ -124,6 +135,30 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
           name="riskOwner"
           label="Risk Owner"
         />
+
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="hasGlobalRevenueImpact"
+            checked={hasGlobalRevenueImpact}
+            onCheckedChange={(checked) => {
+              form.setValue("hasGlobalRevenueImpact", checked === true);
+              if (!checked) {
+                form.setValue("globalRevenueImpactHours", undefined);
+              }
+            }}
+          />
+          <Label htmlFor="hasGlobalRevenueImpact">Global revenue impact</Label>
+        </div>
+
+        {hasGlobalRevenueImpact && (
+          <TextField
+            form={form}
+            name="globalRevenueImpactHours"
+            label="Hours of global revenue impact"
+            type="number"
+            min={0}
+          />
+        )}
 
         <Button type="submit">{initialValues ? 'Update' : 'Submit'}</Button>
       </form>
