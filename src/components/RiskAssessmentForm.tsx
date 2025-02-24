@@ -1,310 +1,125 @@
+
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { Form } from "@/components/ui/form";
 import { RiskAssessment, RISK_CATEGORIES, DATA_INTERFACES, DATA_LOCATIONS, DATA_CLASSIFICATIONS } from "@/types/risk";
-import { useToast } from "@/components/ui/use-toast";
-import { useAuth } from "@/components/AuthProvider";
+import { SelectField } from "./forms/SelectField";
+import { TextField } from "./forms/TextField";
+import { useServices } from "@/hooks/useServices";
+import { useRiskAssessmentSubmit } from "@/hooks/useRiskAssessmentSubmit";
 
 interface RiskAssessmentFormProps {
   onSubmit: (data: Omit<RiskAssessment, "id" | "createdAt">) => void;
 }
 
 const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
-  const { toast } = useToast();
-  const { user } = useAuth();
   const form = useForm<Omit<RiskAssessment, "id" | "createdAt">>();
-
-  const { data: services = [] } = useQuery({
-    queryKey: ['services'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('services')
-        .select('*');
-      if (error) throw error;
-      return data;
-    }
-  });
-
-  const handleSubmit = async (values: Omit<RiskAssessment, "id" | "createdAt">) => {
-    if (!user) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to submit a risk assessment",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('risk_assessments')
-        .insert({
-          service_id: values.serviceId,
-          risk_category: values.riskCategory,
-          risk_description: values.riskDescription,
-          data_interface: values.dataInterface,
-          data_location: values.dataLocation,
-          likelihood_per_year: values.likelihoodPerYear,
-          risk_level: values.riskLevel,
-          impact: values.impact,
-          mitigation: values.mitigation,
-          data_classification: values.dataClassification,
-          risk_owner: values.riskOwner,
-          created_by: user.id
-        });
-
-      if (error) throw error;
-
-      onSubmit(values);
-      form.reset();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save risk assessment",
-        variant: "destructive",
-      });
-    }
-  };
+  const { data: services = [] } = useServices();
+  const handleSubmit = useRiskAssessmentSubmit(form, onSubmit);
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
+        <SelectField
+          form={form}
           name="serviceId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Service</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a service" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {services.map((service) => (
-                    <SelectItem key={service.id} value={service.id}>
-                      {service.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Service"
+          placeholder="Select a service"
+          options={services.map((service) => ({
+            value: service.id,
+            label: service.name,
+          }))}
         />
 
-        <FormField
-          control={form.control}
+        <SelectField
+          form={form}
           name="riskCategory"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Risk Category</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a risk category" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {RISK_CATEGORIES.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Risk Category"
+          placeholder="Select a risk category"
+          options={RISK_CATEGORIES.map((category) => ({
+            value: category,
+            label: category,
+          }))}
         />
 
-        <FormField
-          control={form.control}
+        <TextField
+          form={form}
           name="riskDescription"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Risk Description</FormLabel>
-              <FormControl>
-                <Textarea {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Risk Description"
+          type="textarea"
         />
 
-        <FormField
-          control={form.control}
+        <SelectField
+          form={form}
           name="dataInterface"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Data Interface</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select data interface" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {DATA_INTERFACES.map((interface_) => (
-                    <SelectItem key={interface_} value={interface_}>
-                      {interface_}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Data Interface"
+          placeholder="Select data interface"
+          options={DATA_INTERFACES.map((interface_) => ({
+            value: interface_,
+            label: interface_,
+          }))}
         />
 
-        <FormField
-          control={form.control}
+        <SelectField
+          form={form}
           name="dataLocation"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Data Location</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select data location" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {DATA_LOCATIONS.map((location) => (
-                    <SelectItem key={location} value={location}>
-                      {location}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Data Location"
+          placeholder="Select data location"
+          options={DATA_LOCATIONS.map((location) => ({
+            value: location,
+            label: location,
+          }))}
         />
 
-        <FormField
-          control={form.control}
+        <TextField
+          form={form}
           name="likelihoodPerYear"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Likelihood (%/year)</FormLabel>
-              <FormControl>
-                <Input type="number" min="0" max="100" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Likelihood (%/year)"
+          type="number"
+          min={0}
+          max={100}
         />
 
-        <FormField
-          control={form.control}
+        <SelectField
+          form={form}
           name="riskLevel"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Risk Level</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select risk level" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {["low", "medium", "high", "critical"].map((level) => (
-                    <SelectItem key={level} value={level}>
-                      {level.charAt(0).toUpperCase() + level.slice(1)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Risk Level"
+          placeholder="Select risk level"
+          options={["low", "medium", "high", "critical"].map((level) => ({
+            value: level,
+            label: level.charAt(0).toUpperCase() + level.slice(1),
+          }))}
         />
 
-        <FormField
-          control={form.control}
+        <TextField
+          form={form}
           name="impact"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Impact</FormLabel>
-              <FormControl>
-                <Textarea {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Impact"
+          type="textarea"
         />
 
-        <FormField
-          control={form.control}
+        <TextField
+          form={form}
           name="mitigation"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Mitigation</FormLabel>
-              <FormControl>
-                <Textarea {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Mitigation"
+          type="textarea"
         />
 
-        <FormField
-          control={form.control}
+        <SelectField
+          form={form}
           name="dataClassification"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Data Classification</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select data classification" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {DATA_CLASSIFICATIONS.map((classification) => (
-                    <SelectItem key={classification} value={classification}>
-                      {classification}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Data Classification"
+          placeholder="Select data classification"
+          options={DATA_CLASSIFICATIONS.map((classification) => ({
+            value: classification,
+            label: classification,
+          }))}
         />
 
-        <FormField
-          control={form.control}
+        <TextField
+          form={form}
           name="riskOwner"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Risk Owner</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Risk Owner"
         />
 
         <Button type="submit">Submit</Button>
