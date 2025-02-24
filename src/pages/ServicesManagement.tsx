@@ -1,4 +1,3 @@
-
 import { useServices } from "@/hooks/useServices";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +22,7 @@ import { useQuery } from "@tanstack/react-query";
 
 type ServiceFormData = Pick<Service, "name" | "description"> & {
   divisionId?: string;
+  teamId?: string;
 };
 
 const DEFAULT_RISK_ASSESSMENTS = [
@@ -214,11 +214,24 @@ const ServicesManagement = () => {
     },
   });
 
+  // Fetch teams for the dropdown
+  const { data: teams = [] } = useQuery({
+    queryKey: ['teams'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('teams')
+        .select('*');
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const form = useForm<ServiceFormData>({
     defaultValues: {
       name: "",
       description: "",
       divisionId: undefined,
+      teamId: undefined,
     },
   });
 
@@ -252,6 +265,7 @@ const ServicesManagement = () => {
             name: data.name,
             description: data.description,
             division_id: data.divisionId,
+            team_id: data.teamId,
           })
           .eq("id", editingService.id);
 
@@ -272,6 +286,7 @@ const ServicesManagement = () => {
             name: data.name,
             description: data.description,
             division_id: data.divisionId,
+            team_id: data.teamId,
             created_by: userId,
           }])
           .select()
@@ -308,6 +323,7 @@ const ServicesManagement = () => {
       name: service.name,
       description: service.description,
       divisionId: service.divisionId,
+      teamId: service.teamId,
     });
     setOpen(true);
   };
@@ -344,6 +360,7 @@ const ServicesManagement = () => {
         name: "",
         description: "",
         divisionId: undefined,
+        teamId: undefined,
       });
     }
     setOpen(open);
@@ -388,6 +405,16 @@ const ServicesManagement = () => {
                     label: div.name,
                   }))}
                 />
+                <SelectField
+                  form={form}
+                  name="teamId"
+                  label="Team"
+                  placeholder="Select a team"
+                  options={teams.map(team => ({
+                    value: team.id,
+                    label: team.name,
+                  }))}
+                />
                 <Button type="submit">
                   {editingService ? 'Update Service' : 'Create Service'}
                 </Button>
@@ -403,17 +430,20 @@ const ServicesManagement = () => {
             <TableHead>Name</TableHead>
             <TableHead>Description</TableHead>
             <TableHead>Division</TableHead>
+            <TableHead>Team</TableHead>
             <TableHead className="w-[150px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {services.map((service) => {
             const division = divisions.find(d => d.id === service.divisionId);
+            const team = teams.find(t => t.id === service.teamId);
             return (
               <TableRow key={service.id}>
                 <TableCell>{service.name}</TableCell>
                 <TableCell>{service.description}</TableCell>
                 <TableCell>{division?.name || 'Not assigned'}</TableCell>
+                <TableCell>{team?.name || 'Not assigned'}</TableCell>
                 <TableCell>
                   <div className="flex gap-2">
                     <Button
