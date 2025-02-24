@@ -1,7 +1,7 @@
+
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -13,20 +13,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { RiskAssessment } from "@/types/risk";
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Pencil } from "lucide-react";
-import RiskAssessmentForm from "./RiskAssessmentForm";
 import { useToast } from "@/components/ui/use-toast";
+import { useServiceDetails } from "@/hooks/useServiceDetails";
+import RiskAssessmentTableRow from "./RiskAssessmentTableRow";
+import RiskAssessmentEditDialog from "./RiskAssessmentEditDialog";
 
 interface RiskAssessmentTableProps {
   assessments: RiskAssessment[];
@@ -37,53 +31,7 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
   const [editingAssessment, setEditingAssessment] = useState<RiskAssessment | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-
-  const { data: services = [] } = useQuery({
-    queryKey: ['services'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('services')
-        .select('*');
-      if (error) throw error;
-      return data;
-    }
-  });
-
-  const { data: divisions = [] } = useQuery({
-    queryKey: ['divisions'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('divisions')
-        .select('*');
-      if (error) throw error;
-      return data;
-    }
-  });
-
-  const { data: teams = [] } = useQuery({
-    queryKey: ['teams'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('teams')
-        .select('*');
-      if (error) throw error;
-      return data;
-    }
-  });
-
-  const getServiceDetails = (serviceId: string) => {
-    const service = services.find(s => s.id === serviceId);
-    if (!service) return { name: "Unknown Service", division: "Unknown Division", team: "Unknown Team" };
-
-    const division = divisions.find(d => d.id === service.division_id);
-    const team = teams.find(t => t.id === service.team_id);
-
-    return {
-      name: service.name,
-      division: division?.name || "Unknown Division",
-      team: team?.name || "Unknown Team"
-    };
-  };
+  const { getServiceDetails } = useServiceDetails();
 
   const handleEdit = (assessment: RiskAssessment) => {
     setEditingAssessment(assessment);
@@ -179,32 +127,14 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
                 {filteredAssessments.map((assessment) => {
                   const serviceDetails = getServiceDetails(assessment.serviceId);
                   return (
-                    <TableRow key={assessment.id}>
-                      <TableCell className="font-medium">
-                        {serviceDetails.name}
-                      </TableCell>
-                      <TableCell>{serviceDetails.division}</TableCell>
-                      <TableCell>{serviceDetails.team}</TableCell>
-                      <TableCell>{assessment.riskDescription}</TableCell>
-                      <TableCell>{assessment.riskCategory}</TableCell>
-                      <TableCell>{assessment.dataInterface}</TableCell>
-                      <TableCell>{assessment.dataLocation}</TableCell>
-                      <TableCell>{assessment.likelihoodPerYear}%</TableCell>
-                      <TableCell>{assessment.riskOwner}</TableCell>
-                      <TableCell>
-                        {assessment.createdAt.toLocaleDateString()}
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(assessment)}
-                          className="h-8 w-8"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
+                    <RiskAssessmentTableRow
+                      key={assessment.id}
+                      assessment={assessment}
+                      serviceName={serviceDetails.name}
+                      divisionName={serviceDetails.division}
+                      teamName={serviceDetails.team}
+                      onEdit={handleEdit}
+                    />
                   );
                 })}
               </TableBody>
@@ -213,34 +143,11 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
         </CardContent>
       </Card>
 
-      <Dialog open={!!editingAssessment} onOpenChange={() => setEditingAssessment(null)}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Edit Risk Assessment</DialogTitle>
-          </DialogHeader>
-          {editingAssessment && (
-            <RiskAssessmentForm
-              onSubmit={handleEditSubmit}
-              initialValues={{
-                serviceId: editingAssessment.serviceId,
-                riskCategory: editingAssessment.riskCategory,
-                riskDescription: editingAssessment.riskDescription,
-                dataInterface: editingAssessment.dataInterface,
-                dataLocation: editingAssessment.dataLocation,
-                likelihoodPerYear: editingAssessment.likelihoodPerYear,
-                riskLevel: editingAssessment.riskLevel,
-                mitigation: editingAssessment.mitigation,
-                dataClassification: editingAssessment.dataClassification,
-                riskOwner: editingAssessment.riskOwner,
-                hasGlobalRevenueImpact: editingAssessment.hasGlobalRevenueImpact,
-                globalRevenueImpactHours: editingAssessment.globalRevenueImpactHours,
-                hasLocalRevenueImpact: editingAssessment.hasLocalRevenueImpact,
-                localRevenueImpactHours: editingAssessment.localRevenueImpactHours,
-              }}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+      <RiskAssessmentEditDialog
+        assessment={editingAssessment}
+        onClose={() => setEditingAssessment(null)}
+        onSubmit={handleEditSubmit}
+      />
     </>
   );
 };
