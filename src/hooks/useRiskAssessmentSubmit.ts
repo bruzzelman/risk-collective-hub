@@ -36,6 +36,7 @@ export const useRiskAssessmentSubmit = (
           mitigation: values.mitigation,
           data_classification: values.dataClassification,
           risk_owner: values.riskOwner,
+          revenue_impact: values.revenueImpact,
           has_global_revenue_impact: values.hasGlobalRevenueImpact,
           global_revenue_impact_hours: values.globalRevenueImpactHours,
           has_local_revenue_impact: values.hasLocalRevenueImpact,

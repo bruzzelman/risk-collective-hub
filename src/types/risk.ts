@@ -1,5 +1,6 @@
-
 export type RiskLevel = "low" | "medium" | "high" | "critical";
+
+export type RevenueImpact = "yes" | "no" | "unclear";
 
 export type Team = {
   id: string;
@@ -43,6 +44,7 @@ export type RiskAssessment = {
   riskOwner: string;
   createdAt: Date;
   divisionId?: string;
+  revenueImpact: RevenueImpact;
   hasGlobalRevenueImpact: boolean;
   globalRevenueImpactHours?: number;
   hasLocalRevenueImpact: boolean;
