@@ -12,6 +12,9 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ServicesManagement from "./ServicesManagement";
+import DataClassificationDistribution from "@/components/charts/DataClassificationDistribution";
+import RiskLevelDistribution from "@/components/charts/RiskLevelDistribution";
+import RiskCategoryDistribution from "@/components/charts/RiskCategoryDistribution";
 
 const IndexPage = () => {
   const { toast } = useToast();
@@ -100,6 +103,10 @@ const IndexPage = () => {
     refetch();
   };
 
+  if (!data || error) {
+    return null;
+  }
+
   return (
     <div className="container mx-auto py-10">
       <Card>
@@ -111,6 +118,7 @@ const IndexPage = () => {
             <TabsList>
               <TabsTrigger value="assessments">Risk Assessments</TabsTrigger>
               <TabsTrigger value="services">Services</TabsTrigger>
+              <TabsTrigger value="reporting">Reporting</TabsTrigger>
             </TabsList>
 
             <TabsContent value="assessments">
@@ -129,6 +137,37 @@ const IndexPage = () => {
 
             <TabsContent value="services">
               <ServicesManagement />
+            </TabsContent>
+
+            <TabsContent value="reporting">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Risk Level Distribution</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <RiskLevelDistribution assessments={assessments} />
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Data Classification Distribution</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <DataClassificationDistribution assessments={assessments} />
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Risk Category Distribution</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <RiskCategoryDistribution assessments={assessments} />
+                  </CardContent>
+                </Card>
+              </div>
             </TabsContent>
           </Tabs>
         </CardContent>
