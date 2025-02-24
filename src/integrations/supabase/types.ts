@@ -67,6 +67,7 @@ export type Database = {
       }
       risk_assessments: {
         Row: {
+          additional_loss_event_costs: number | null
           created_at: string
           created_by: string
           data_classification: string
@@ -76,6 +77,7 @@ export type Database = {
           global_revenue_impact_hours: number | null
           has_global_revenue_impact: boolean | null
           has_local_revenue_impact: boolean | null
+          hours_to_remediate: number | null
           id: string
           likelihood_per_year: number
           local_revenue_impact_hours: number | null
@@ -87,6 +89,7 @@ export type Database = {
           service_id: string | null
         }
         Insert: {
+          additional_loss_event_costs?: number | null
           created_at?: string
           created_by: string
           data_classification: string
@@ -96,6 +99,7 @@ export type Database = {
           global_revenue_impact_hours?: number | null
           has_global_revenue_impact?: boolean | null
           has_local_revenue_impact?: boolean | null
+          hours_to_remediate?: number | null
           id?: string
           likelihood_per_year?: number
           local_revenue_impact_hours?: number | null
@@ -107,6 +111,7 @@ export type Database = {
           service_id?: string | null
         }
         Update: {
+          additional_loss_event_costs?: number | null
           created_at?: string
           created_by?: string
           data_classification?: string
@@ -116,6 +121,7 @@ export type Database = {
           global_revenue_impact_hours?: number | null
           has_global_revenue_impact?: boolean | null
           has_local_revenue_impact?: boolean | null
+          hours_to_remediate?: number | null
           id?: string
           likelihood_per_year?: number
           local_revenue_impact_hours?: number | null
