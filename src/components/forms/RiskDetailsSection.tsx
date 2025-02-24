@@ -17,6 +17,7 @@ export const RiskDetailsSection = ({ form }: RiskDetailsSectionProps) => {
         type="number"
         min={0}
         max={100}
+        required
       />
 
       <TextField
@@ -24,12 +25,14 @@ export const RiskDetailsSection = ({ form }: RiskDetailsSectionProps) => {
         name="mitigation"
         label="Current compensating control"
         type="textarea"
+        required
       />
 
       <TextField
         form={form}
         name="riskOwner"
         label="Risk Owner"
+        required
       />
 
       <TextField

@@ -21,7 +21,8 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
       hasLocalRevenueImpact: false,
       riskLevel: "low",
       dataClassification: "Internal",
-      revenueImpact: undefined,
+      revenueImpact: "unclear",
+      likelihoodPerYear: 1,
       ...initialValues,
     },
   });
