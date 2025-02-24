@@ -101,7 +101,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
         <TextField
           form={form}
           name="mitigation"
-          label="Mitigation"
+          label="Current compensating control"
           type="textarea"
         />
 
