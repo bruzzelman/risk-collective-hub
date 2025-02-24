@@ -40,6 +40,8 @@ export const useRiskAssessmentSubmit = (
           global_revenue_impact_hours: values.globalRevenueImpactHours,
           has_local_revenue_impact: values.hasLocalRevenueImpact,
           local_revenue_impact_hours: values.localRevenueImpactHours,
+          hours_to_remediate: values.hoursToRemediate,
+          additional_loss_event_costs: values.additionalLossEventCosts,
           created_by: user.id
         });
 

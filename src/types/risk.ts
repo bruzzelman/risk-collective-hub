@@ -46,6 +46,8 @@ export type RiskAssessment = {
   globalRevenueImpactHours?: number;
   hasLocalRevenueImpact: boolean;
   localRevenueImpactHours?: number;
+  hoursToRemediate?: number;
+  additionalLossEventCosts?: number;
 };
 
 export const RISK_CATEGORIES = [

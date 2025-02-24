@@ -21,8 +21,8 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
     defaultValues: {
       hasGlobalRevenueImpact: false,
       hasLocalRevenueImpact: false,
-      riskLevel: "low", // Set a default risk level since we're not showing it in the UI
-      dataClassification: "Internal", // Set a default data classification since we're not showing it in the UI
+      riskLevel: "low",
+      dataClassification: "Internal",
       ...initialValues,
     },
   });
@@ -113,6 +113,22 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
           form={form}
           name="riskOwner"
           label="Risk Owner"
+        />
+
+        <TextField
+          form={form}
+          name="hoursToRemediate"
+          label="Hours to remediate"
+          type="number"
+          min={0}
+        />
+
+        <TextField
+          form={form}
+          name="additionalLossEventCosts"
+          label="Additional loss event costs (€)"
+          type="number"
+          min={0}
         />
 
         <div className="space-y-4">
