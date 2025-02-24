@@ -73,6 +73,8 @@ export type Database = {
           data_interface: string
           data_location: string
           division_id: string | null
+          global_revenue_impact_hours: number | null
+          has_global_revenue_impact: boolean | null
           id: string
           impact: string
           likelihood_per_year: number
@@ -90,6 +92,8 @@ export type Database = {
           data_interface?: string
           data_location?: string
           division_id?: string | null
+          global_revenue_impact_hours?: number | null
+          has_global_revenue_impact?: boolean | null
           id?: string
           impact: string
           likelihood_per_year?: number
@@ -107,6 +111,8 @@ export type Database = {
           data_interface?: string
           data_location?: string
           division_id?: string | null
+          global_revenue_impact_hours?: number | null
+          has_global_revenue_impact?: boolean | null
           id?: string
           impact?: string
           likelihood_per_year?: number
