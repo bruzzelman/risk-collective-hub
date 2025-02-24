@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +21,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { RiskAssessment, RISK_CATEGORIES, DATA_INTERFACES, DATA_LOCATIONS, DATA_CLASSIFICATIONS } from "@/types/risk";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/components/AuthProvider";
 
 interface RiskAssessmentFormProps {
   onSubmit: (data: Omit<RiskAssessment, "id" | "createdAt">) => void;
@@ -29,6 +29,7 @@ interface RiskAssessmentFormProps {
 
 const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const form = useForm<Omit<RiskAssessment, "id" | "createdAt">>();
 
   const { data: services = [] } = useQuery({
@@ -43,24 +44,32 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
   });
 
   const handleSubmit = async (values: Omit<RiskAssessment, "id" | "createdAt">) => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to submit a risk assessment",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('risk_assessments')
-        .insert([
-          {
-            service_id: values.serviceId,
-            risk_category: values.riskCategory,
-            risk_description: values.riskDescription,
-            data_interface: values.dataInterface,
-            data_location: values.dataLocation,
-            likelihood_per_year: values.likelihoodPerYear,
-            risk_level: values.riskLevel,
-            impact: values.impact,
-            mitigation: values.mitigation,
-            data_classification: values.dataClassification,
-            risk_owner: values.riskOwner,
-          }
-        ]);
+        .insert({
+          service_id: values.serviceId,
+          risk_category: values.riskCategory,
+          risk_description: values.riskDescription,
+          data_interface: values.dataInterface,
+          data_location: values.dataLocation,
+          likelihood_per_year: values.likelihoodPerYear,
+          risk_level: values.riskLevel,
+          impact: values.impact,
+          mitigation: values.mitigation,
+          data_classification: values.dataClassification,
+          risk_owner: values.riskOwner,
+          created_by: user.id
+        });
 
       if (error) throw error;
 
