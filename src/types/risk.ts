@@ -43,6 +43,7 @@ export type RiskAssessment = {
   dataClassification: string;
   riskOwner: string;
   createdAt: Date;
+  divisionId?: string;
 };
 
 export const RISK_CATEGORIES = [
