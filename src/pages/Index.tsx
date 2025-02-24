@@ -1,4 +1,3 @@
-
 import RiskAssessmentTable from "@/components/RiskAssessmentTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -220,102 +219,113 @@ const IndexPage = () => {
   }
 
   return (
-    <div className="container mx-auto py-10">
-      <Card>
-        <CardHeader className="flex flex-row items-center space-x-4">
-          <Rat className="h-8 w-8 text-flixbus-green" />
-          <CardTitle>RAT - Risk Assessment Tool</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="assessments" className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="assessments">Risk Assessments</TabsTrigger>
-              <TabsTrigger value="services">Services</TabsTrigger>
-              <TabsTrigger value="reporting">Reporting</TabsTrigger>
-              <TabsTrigger value="standard-risks">Standard Risks</TabsTrigger>
-            </TabsList>
+    <div className="relative min-h-screen pb-32">
+      <div className="container mx-auto py-10">
+        <Card>
+          <CardHeader className="flex flex-row items-center space-x-4">
+            <Rat className="h-8 w-8 text-flixbus-green" />
+            <CardTitle>RAT - Risk Assessment Tool</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="assessments" className="space-y-4">
+              <TabsList>
+                <TabsTrigger value="assessments">Risk Assessments</TabsTrigger>
+                <TabsTrigger value="services">Services</TabsTrigger>
+                <TabsTrigger value="reporting">Reporting</TabsTrigger>
+                <TabsTrigger value="standard-risks">Standard Risks</TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="assessments">
-              <div className="flex justify-end mb-4">
-                <Button onClick={() => setIsFormOpen(true)}>Add Risk Assessment</Button>
-              </div>
-
-              {isFormOpen && (
-                <div className="mb-8">
-                  <RiskAssessmentForm onSubmit={handleFormSubmit} />
+              <TabsContent value="assessments">
+                <div className="flex justify-end mb-4">
+                  <Button onClick={() => setIsFormOpen(true)}>Add Risk Assessment</Button>
                 </div>
-              )}
 
-              <RiskAssessmentTable assessments={assessments} />
-            </TabsContent>
+                {isFormOpen && (
+                  <div className="mb-8">
+                    <RiskAssessmentForm onSubmit={handleFormSubmit} />
+                  </div>
+                )}
 
-            <TabsContent value="services">
-              <ServicesManagement />
-            </TabsContent>
+                <RiskAssessmentTable assessments={assessments} />
+              </TabsContent>
 
-            <TabsContent value="reporting">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <TabsContent value="services">
+                <ServicesManagement />
+              </TabsContent>
+
+              <TabsContent value="reporting">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Risk Level Distribution</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <RiskLevelDistribution assessments={assessments} />
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Data Classification Distribution</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <DataClassificationDistribution assessments={assessments} />
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Risk Category Distribution</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <RiskCategoryDistribution assessments={assessments} />
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="standard-risks">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Risk Level Distribution</CardTitle>
+                    <CardTitle>Standard Risks</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <RiskLevelDistribution assessments={assessments} />
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Data Classification Distribution</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <DataClassificationDistribution assessments={assessments} />
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Risk Category Distribution</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <RiskCategoryDistribution assessments={assessments} />
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="standard-risks">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Standard Risks</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Risk Name</TableHead>
-                        <TableHead>Category</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Loss Event Category</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {standardRisks.map((risk, index) => (
-                        <TableRow key={index}>
-                          <TableCell className="font-medium">{risk.name}</TableCell>
-                          <TableCell>{risk.category}</TableCell>
-                          <TableCell>{risk.description}</TableCell>
-                          <TableCell>{risk.lossEventCategory}</TableCell>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Risk Name</TableHead>
+                          <TableHead>Category</TableHead>
+                          <TableHead>Description</TableHead>
+                          <TableHead>Loss Event Category</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+                      </TableHeader>
+                      <TableBody>
+                        {standardRisks.map((risk, index) => (
+                          <TableRow key={index}>
+                            <TableCell className="font-medium">{risk.name}</TableCell>
+                            <TableCell>{risk.category}</TableCell>
+                            <TableCell>{risk.description}</TableCell>
+                            <TableCell>{risk.lossEventCategory}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
+      <footer className="fixed bottom-0 left-0 w-full h-32 z-50">
+        <div className="relative w-full h-full">
+          <img 
+            src="https://honeycomb-illustrations.hive.flixbus.com/7.0.1/flix-illustrations/svg/landscape-usa-flixbus-greyhound.svg"
+            alt="Flixbus Landscape"
+            className="w-full h-full object-cover opacity-20 hover:opacity-100 transition-opacity duration-300"
+          />
+        </div>
+      </footer>
     </div>
   );
 };
