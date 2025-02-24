@@ -109,6 +109,8 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
                 <TableHead>Loss event description</TableHead>
                 <TableHead>Loss event category</TableHead>
                 <TableHead>Data Interface</TableHead>
+                <TableHead>Data Location</TableHead>
+                <TableHead>Likelihood (%/year)</TableHead>
                 <TableHead>Risk Level</TableHead>
                 <TableHead>Data Classification</TableHead>
                 <TableHead>Risk Owner</TableHead>
@@ -128,6 +130,8 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
                     <TableCell>{assessment.riskDescription}</TableCell>
                     <TableCell>{assessment.riskCategory}</TableCell>
                     <TableCell>{assessment.dataInterface}</TableCell>
+                    <TableCell>{assessment.dataLocation}</TableCell>
+                    <TableCell>{assessment.likelihoodPerYear}%</TableCell>
                     <TableCell>
                       <RiskLevelBadge level={assessment.riskLevel} />
                     </TableCell>

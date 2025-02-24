@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { RiskLevel, RISK_CATEGORIES, DATA_CLASSIFICATIONS, Service, RiskAssessment, DATA_INTERFACES } from "@/types/risk";
+import { RiskLevel, RISK_CATEGORIES, DATA_CLASSIFICATIONS, Service, RiskAssessment, DATA_INTERFACES, DATA_LOCATIONS } from "@/types/risk";
 import { Separator } from "@/components/ui/separator";
 import { PlusCircle, Trash2 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
@@ -39,6 +39,8 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
     riskCategory: "",
     riskDescription: "",
     dataInterface: "",
+    dataLocation: "",
+    likelihoodPerYear: 1,
     riskLevel: "",
     impact: "",
     mitigation: "",
@@ -88,6 +90,8 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
         riskCategory: risk.risk_category,
         riskDescription: risk.risk_description,
         dataInterface: risk.data_interface,
+        dataLocation: risk.data_location,
+        likelihoodPerYear: risk.likelihood_per_year,
         riskLevel: risk.risk_level as RiskLevel,
         impact: risk.impact,
         mitigation: risk.mitigation,
@@ -251,6 +255,8 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
         risk_category: currentRisk.riskCategory,
         risk_description: currentRisk.riskDescription,
         data_interface: currentRisk.dataInterface,
+        data_location: currentRisk.dataLocation,
+        likelihood_per_year: currentRisk.likelihoodPerYear,
         risk_level: currentRisk.riskLevel,
         impact: currentRisk.impact,
         mitigation: currentRisk.mitigation,
@@ -272,6 +278,8 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
       riskCategory: "",
       riskDescription: "",
       dataInterface: "",
+      dataLocation: "",
+      likelihoodPerYear: 1,
       riskLevel: "",
       impact: "",
       mitigation: "",
@@ -314,6 +322,8 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
       riskCategory: risk.riskCategory,
       riskDescription: risk.riskDescription,
       dataInterface: risk.dataInterface,
+      dataLocation: risk.dataLocation,
+      likelihoodPerYear: risk.likelihoodPerYear,
       riskLevel: risk.riskLevel,
       impact: risk.impact,
       mitigation: risk.mitigation,
@@ -539,6 +549,39 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
                         ))}
                       </SelectContent>
                     </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="dataLocation">Loss event data location</Label>
+                    <Select
+                      value={currentRisk.dataLocation}
+                      onValueChange={(value) => handleRiskSelectChange("dataLocation", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select data location" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DATA_LOCATIONS.map((location) => (
+                          <SelectItem key={location} value={location}>
+                            {location}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="likelihoodPerYear">Loss event likelihood per year (%)</Label>
+                    <Input
+                      id="likelihoodPerYear"
+                      name="likelihoodPerYear"
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                      value={currentRisk.likelihoodPerYear}
+                      onChange={(e) => handleRiskChange(e)}
+                      placeholder="Enter likelihood percentage"
+                    />
                   </div>
 
                   <div className="space-y-2">

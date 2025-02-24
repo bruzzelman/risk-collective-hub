@@ -35,6 +35,8 @@ export type RiskAssessment = {
   riskCategory: string;
   riskDescription: string;
   dataInterface: string;
+  dataLocation: string;
+  likelihoodPerYear: number;
   riskLevel: RiskLevel;
   impact: string;
   mitigation: string;
@@ -62,6 +64,23 @@ export const DATA_INTERFACES = [
   "Not applicable",
   "Other",
   "Web"
+] as const;
+
+export const DATA_LOCATIONS = [
+  "Appliction database",
+  "Cloud architechture",
+  "CRM",
+  "Data lake",
+  "Data warehouse",
+  "Email archives",
+  "Event streaming",
+  "Local file system",
+  "Not applicable",
+  "Object storage",
+  "Other",
+  "Search indexes",
+  "Appliction level",
+  "Code repository"
 ] as const;
 
 export const DATA_CLASSIFICATIONS = [

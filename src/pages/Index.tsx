@@ -1,40 +1,39 @@
-
-import { useEffect } from "react";
-import RiskAssessmentForm from "@/components/RiskAssessmentForm";
 import RiskAssessmentTable from "@/components/RiskAssessmentTable";
-import Overview from "./Overview";
-import RiskAssessments from "./RiskAssessments";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
+import { useEffect, useState } from "react";
+import RiskAssessmentForm from "@/components/RiskAssessmentForm";
 import { RiskAssessment } from "@/types/risk";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { Users } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/router";
+import { useQuery } from "@tanstack/react-query";
 
-const Index = () => {
-  const { user } = useAuth();
+const IndexPage = () => {
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const { user } = useAuth();
+  const router = useRouter();
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [assessments, setAssessments] = useState<RiskAssessment[]>([]);
 
-  const { data: assessments = [], refetch } = useQuery({
-    queryKey: ['risk-assessments'],
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    }
+  }, [user, router]);
+
+  const { data, error, refetch } = useQuery({
+    queryKey: ['riskAssessments'],
     queryFn: async () => {
+      if (!user) return [];
+
       const { data, error } = await supabase
         .from('risk_assessments')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) {
-        toast({
-          title: "Error fetching assessments",
-          description: error.message,
-          variant: "destructive",
-        });
-        return [];
-      }
+      if (error) throw error;
 
       return data.map((assessment): RiskAssessment => ({
         id: assessment.id,
@@ -42,6 +41,8 @@ const Index = () => {
         riskCategory: assessment.risk_category,
         riskDescription: assessment.risk_description,
         dataInterface: assessment.data_interface,
+        dataLocation: assessment.data_location,
+        likelihoodPerYear: Number(assessment.likelihood_per_year),
         riskLevel: assessment.risk_level as RiskAssessment['riskLevel'],
         impact: assessment.impact,
         mitigation: assessment.mitigation,
@@ -52,37 +53,69 @@ const Index = () => {
     },
   });
 
-  return (
-    <div className="container py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-bold">Risk Assessment Portal</h1>
-        <Button onClick={() => navigate("/teams")} variant="outline">
-          <Users className="mr-2 h-4 w-4" />
-          Manage Teams & Divisions
-        </Button>
-      </div>
-      
-      <Tabs defaultValue="new" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="new">New Assessment</TabsTrigger>
-          <TabsTrigger value="view">View Assessments</TabsTrigger>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="new" className="space-y-6">
-          <RiskAssessmentForm onSubmit={() => refetch()} />
-        </TabsContent>
-        
-        <TabsContent value="view">
-          <RiskAssessments assessments={assessments} />
-        </TabsContent>
+  useEffect(() => {
+    if (data) {
+      setAssessments(data);
+    }
+  }, [data]);
 
-        <TabsContent value="overview">
-          <Overview assessments={assessments} />
-        </TabsContent>
-      </Tabs>
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  }, [error, toast]);
+
+  const handleFormSubmit = async (data: Omit<RiskAssessment, "id" | "createdAt">) => {
+    // Here you would typically handle the form submission, e.g., sending the data to an API
+    console.log("Form submitted with data:", data);
+
+    // Optimistically update the assessments state
+    setAssessments((prevAssessments) => [
+      ...prevAssessments,
+      {
+        ...data,
+        id: Math.random().toString(), // Temporary ID
+        createdAt: new Date(),
+      } as RiskAssessment,
+    ]);
+
+    // Close the form
+    setIsFormOpen(false);
+
+    // Show a success toast
+    toast({
+      title: "Success",
+      description: "Risk assessment added successfully!",
+    });
+    refetch();
+  };
+
+  return (
+    <div className="container mx-auto py-10">
+      <Card>
+        <CardHeader>
+          <CardTitle>Risk Assessment Tool</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex justify-end mb-4">
+            <Button onClick={() => setIsFormOpen(true)}>Add Risk Assessment</Button>
+          </div>
+
+          {isFormOpen && (
+            <div className="mb-8">
+              <RiskAssessmentForm onSubmit={handleFormSubmit} />
+            </div>
+          )}
+
+          <RiskAssessmentTable assessments={assessments} />
+        </CardContent>
+      </Card>
     </div>
   );
 };
 
-export default Index;
+export default IndexPage;
