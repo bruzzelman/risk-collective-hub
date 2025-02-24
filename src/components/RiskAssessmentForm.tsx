@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { RiskLevel, RISK_CATEGORIES, DATA_CLASSIFICATIONS, Service, RiskAssessment } from "@/types/risk";
+import { RiskLevel, RISK_CATEGORIES, DATA_CLASSIFICATIONS, Service, RiskAssessment, DATA_INTERFACES } from "@/types/risk";
 import { Separator } from "@/components/ui/separator";
 import { PlusCircle, Trash2 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
@@ -38,6 +38,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
   const [currentRisk, setCurrentRisk] = useState({
     riskCategory: "",
     riskDescription: "",
+    dataInterface: "",
     riskLevel: "",
     impact: "",
     mitigation: "",
@@ -87,6 +88,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
         serviceId: risk.service_id,
         riskCategory: risk.risk_category,
         riskDescription: risk.risk_description,
+        dataInterface: risk.data_interface,
         riskLevel: risk.risk_level as RiskLevel,
         impact: risk.impact,
         mitigation: risk.mitigation,
@@ -249,6 +251,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
         service_id: selectedServiceId,
         risk_category: currentRisk.riskCategory,
         risk_description: currentRisk.riskDescription,
+        data_interface: currentRisk.dataInterface,
         risk_level: currentRisk.riskLevel,
         impact: currentRisk.impact,
         mitigation: currentRisk.mitigation,
@@ -269,6 +272,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
     setCurrentRisk({
       riskCategory: "",
       riskDescription: "",
+      dataInterface: "",
       riskLevel: "",
       impact: "",
       mitigation: "",
@@ -310,6 +314,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
     setCurrentRisk({
       riskCategory: risk.riskCategory,
       riskDescription: risk.riskDescription,
+      dataInterface: risk.dataInterface,
       riskLevel: risk.riskLevel,
       impact: risk.impact,
       mitigation: risk.mitigation,
@@ -489,6 +494,17 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
               {selectedServiceId ? (
                 <>
                   <div className="space-y-2">
+                    <Label htmlFor="riskDescription">Loss event description</Label>
+                    <Textarea
+                      id="riskDescription"
+                      name="riskDescription"
+                      value={currentRisk.riskDescription}
+                      onChange={handleRiskChange}
+                      placeholder="Describe the loss event"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
                     <Label htmlFor="riskCategory">Loss event category</Label>
                     <Select
                       value={currentRisk.riskCategory}
@@ -508,14 +524,22 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="riskDescription">Loss event description</Label>
-                    <Textarea
-                      id="riskDescription"
-                      name="riskDescription"
-                      value={currentRisk.riskDescription}
-                      onChange={handleRiskChange}
-                      placeholder="Describe the loss event"
-                    />
+                    <Label htmlFor="dataInterface">Loss event data interface</Label>
+                    <Select
+                      value={currentRisk.dataInterface}
+                      onValueChange={(value) => handleRiskSelectChange("dataInterface", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select data interface" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DATA_INTERFACES.map((interface_) => (
+                          <SelectItem key={interface_} value={interface_}>
+                            {interface_}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="space-y-2">

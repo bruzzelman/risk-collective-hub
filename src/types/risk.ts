@@ -34,6 +34,7 @@ export type RiskAssessment = {
   serviceId: string;
   riskCategory: string;
   riskDescription: string;
+  dataInterface: string;
   riskLevel: RiskLevel;
   impact: string;
   mitigation: string;
@@ -46,6 +47,21 @@ export const RISK_CATEGORIES = [
   "Error",
   "Failure",
   "Malicious",
+] as const;
+
+export const DATA_INTERFACES = [
+  "API",
+  "Application code",
+  "Command Line",
+  "Database",
+  "Email & Notification Interfaces",
+  "File-Based",
+  "Hardware Interfaces",
+  "Layer 8",
+  "Message Queue",
+  "Not applicable",
+  "Other",
+  "Web"
 ] as const;
 
 export const DATA_CLASSIFICATIONS = [
