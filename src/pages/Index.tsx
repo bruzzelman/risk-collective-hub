@@ -1,3 +1,4 @@
+
 import RiskAssessmentTable from "@/components/RiskAssessmentTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +16,7 @@ import DataClassificationDistribution from "@/components/charts/DataClassificati
 import RiskLevelDistribution from "@/components/charts/RiskLevelDistribution";
 import RiskCategoryDistribution from "@/components/charts/RiskCategoryDistribution";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Rat } from "lucide-react";
 
 const IndexPage = () => {
   const { toast } = useToast();
@@ -220,8 +222,9 @@ const IndexPage = () => {
   return (
     <div className="container mx-auto py-10">
       <Card>
-        <CardHeader>
-          <CardTitle>Risk Assessment Tool</CardTitle>
+        <CardHeader className="flex flex-row items-center space-x-4">
+          <Rat className="h-8 w-8 text-flixbus-green" />
+          <CardTitle>RAT - Risk Assessment Tool</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="assessments" className="space-y-4">
