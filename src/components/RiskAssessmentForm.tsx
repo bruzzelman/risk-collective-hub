@@ -20,6 +20,7 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
   const form = useForm<Omit<RiskAssessment, "id" | "createdAt">>({
     defaultValues: {
       hasGlobalRevenueImpact: false,
+      riskLevel: "low", // Set a default risk level since we're not showing it in the UI
       ...initialValues,
     },
   });
@@ -92,17 +93,6 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
           type="number"
           min={0}
           max={100}
-        />
-
-        <SelectField
-          form={form}
-          name="riskLevel"
-          label="Risk Level"
-          placeholder="Select risk level"
-          options={["low", "medium", "high", "critical"].map((level) => ({
-            value: level,
-            label: level.charAt(0).toUpperCase() + level.slice(1),
-          }))}
         />
 
         <TextField

@@ -1,4 +1,3 @@
-
 import {
   Table,
   TableBody,
@@ -21,7 +20,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import RiskLevelBadge from "./RiskLevelBadge";
 import { RiskAssessment } from "@/types/risk";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -120,7 +118,6 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
         description: "Risk assessment updated successfully",
       });
 
-      // Refresh the data
       queryClient.invalidateQueries({ queryKey: ['riskAssessments'] });
       setEditingAssessment(null);
     } catch (error) {
@@ -171,7 +168,6 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
                   <TableHead>Data Interface</TableHead>
                   <TableHead>Data Location</TableHead>
                   <TableHead>Likelihood (%/year)</TableHead>
-                  <TableHead>Risk Level</TableHead>
                   <TableHead>Data Classification</TableHead>
                   <TableHead>Risk Owner</TableHead>
                   <TableHead>Date Added</TableHead>
@@ -193,9 +189,6 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
                       <TableCell>{assessment.dataInterface}</TableCell>
                       <TableCell>{assessment.dataLocation}</TableCell>
                       <TableCell>{assessment.likelihoodPerYear}%</TableCell>
-                      <TableCell>
-                        <RiskLevelBadge level={assessment.riskLevel} />
-                      </TableCell>
                       <TableCell>{assessment.dataClassification}</TableCell>
                       <TableCell>{assessment.riskOwner}</TableCell>
                       <TableCell>
