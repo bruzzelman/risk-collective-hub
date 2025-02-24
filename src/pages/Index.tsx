@@ -1,3 +1,4 @@
+
 import RiskAssessmentTable from "@/components/RiskAssessmentTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,21 +8,21 @@ import RiskAssessmentForm from "@/components/RiskAssessmentForm";
 import { RiskAssessment } from "@/types/risk";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
-import { useRouter } from "next/router";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 const IndexPage = () => {
   const { toast } = useToast();
   const { user } = useAuth();
-  const router = useRouter();
+  const navigate = useNavigate();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [assessments, setAssessments] = useState<RiskAssessment[]>([]);
 
   useEffect(() => {
     if (!user) {
-      router.push("/login");
+      navigate("/login");
     }
-  }, [user, router]);
+  }, [user, navigate]);
 
   const { data, error, refetch } = useQuery({
     queryKey: ['riskAssessments'],
