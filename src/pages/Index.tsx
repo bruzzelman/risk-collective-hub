@@ -50,10 +50,13 @@ const IndexPage = () => {
         riskOwner: assessment.risk_owner,
         createdAt: new Date(assessment.created_at),
         divisionId: assessment.division_id,
+        revenueImpact: assessment.revenue_impact,
         hasGlobalRevenueImpact: assessment.has_global_revenue_impact,
         globalRevenueImpactHours: assessment.global_revenue_impact_hours,
         hasLocalRevenueImpact: assessment.has_local_revenue_impact,
         localRevenueImpactHours: assessment.local_revenue_impact_hours,
+        hoursToRemediate: assessment.hours_to_remediate,
+        additionalLossEventCosts: assessment.additional_loss_event_costs,
       }));
     },
   });

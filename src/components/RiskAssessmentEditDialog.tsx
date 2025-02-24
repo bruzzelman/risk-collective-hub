@@ -40,6 +40,7 @@ const RiskAssessmentEditDialog = ({
             mitigation: assessment.mitigation,
             dataClassification: assessment.dataClassification,
             riskOwner: assessment.riskOwner,
+            revenueImpact: assessment.revenueImpact,
             hasGlobalRevenueImpact: assessment.hasGlobalRevenueImpact,
             globalRevenueImpactHours: assessment.globalRevenueImpactHours,
             hasLocalRevenueImpact: assessment.hasLocalRevenueImpact,
