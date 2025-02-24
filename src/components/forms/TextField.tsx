@@ -17,6 +17,7 @@ interface TextFieldProps {
   type?: "text" | "number" | "textarea";
   min?: number;
   max?: number;
+  required?: boolean;
 }
 
 export const TextField = ({
@@ -26,6 +27,7 @@ export const TextField = ({
   type = "text",
   min,
   max,
+  required,
 }: TextFieldProps) => {
   return (
     <FormField
@@ -33,12 +35,12 @@ export const TextField = ({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel>{label}{required && <span className="text-destructive ml-1">*</span>}</FormLabel>
           <FormControl>
             {type === "textarea" ? (
               <Textarea {...field} />
             ) : (
-              <Input type={type} min={min} max={max} {...field} />
+              <Input type={type} min={min} max={max} {...field} required={required} />
             )}
           </FormControl>
           <FormMessage />
