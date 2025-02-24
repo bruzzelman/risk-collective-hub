@@ -1,28 +1,21 @@
 
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { RiskAssessment, RiskLevel } from '@/types/risk';
+import { RiskAssessment } from "@/types/risk";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 
-interface RiskLevelDistributionProps {
+interface Props {
   assessments: RiskAssessment[];
 }
 
-const COLORS = {
-  critical: '#ef4444',
-  high: '#f97316',
-  medium: '#f59e0b',
-  low: '#22c55e'
-};
+const COLORS = ["#73D700", "#FFB547", "#FF4842"];
 
-const RiskLevelDistribution = ({ assessments }: RiskLevelDistributionProps) => {
-  const distribution = assessments.reduce((acc, assessment) => {
-    acc[assessment.riskLevel] = (acc[assessment.riskLevel] || 0) + 1;
-    return acc;
-  }, {} as Record<RiskLevel, number>);
+const RiskLevelDistribution = ({ assessments }: Props) => {
+  const data = [
+    { name: "Low", value: assessments.filter(a => a.riskLevel === "low").length },
+    { name: "Medium", value: assessments.filter(a => a.riskLevel === "medium").length },
+    { name: "High", value: assessments.filter(a => a.riskLevel === "high").length },
+  ].filter(item => item.value > 0);
 
-  const data = Object.entries(distribution).map(([level, count]) => ({
-    name: level.charAt(0).toUpperCase() + level.slice(1),
-    value: count
-  }));
+  if (data.length === 0) return <div>No data available</div>;
 
   return (
     <ResponsiveContainer width="100%" height={300}>
@@ -31,16 +24,14 @@ const RiskLevelDistribution = ({ assessments }: RiskLevelDistributionProps) => {
           data={data}
           cx="50%"
           cy="50%"
-          innerRadius={60}
+          labelLine={false}
           outerRadius={80}
-          paddingAngle={5}
+          fill="#8884d8"
           dataKey="value"
+          label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
         >
-          {data.map((entry, index) => (
-            <Cell 
-              key={`cell-${index}`} 
-              fill={COLORS[entry.name.toLowerCase() as RiskLevel]} 
-            />
+          {data.map((_, index) => (
+            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
         <Tooltip />
