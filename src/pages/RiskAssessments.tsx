@@ -1,3 +1,4 @@
+
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import RiskLevelBadge from "@/components/RiskLevelBadge";
@@ -242,12 +243,6 @@ const RiskAssessments = ({ assessments }: RiskAssessmentsProps) => {
                                 {risk.riskDescription}
                               </p>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                  <h5 className="text-sm font-medium">Impact</h5>
-                                  <p className="text-sm text-muted-foreground">
-                                    {risk.impact}
-                                  </p>
-                                </div>
                                 <div>
                                   <h5 className="text-sm font-medium">Mitigation</h5>
                                   <p className="text-sm text-muted-foreground">
