@@ -168,7 +168,6 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
                   <TableHead>Data Interface</TableHead>
                   <TableHead>Data Location</TableHead>
                   <TableHead>Likelihood (%/year)</TableHead>
-                  <TableHead>Data Classification</TableHead>
                   <TableHead>Risk Owner</TableHead>
                   <TableHead>Date Added</TableHead>
                   <TableHead>Actions</TableHead>
@@ -189,7 +188,6 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
                       <TableCell>{assessment.dataInterface}</TableCell>
                       <TableCell>{assessment.dataLocation}</TableCell>
                       <TableCell>{assessment.likelihoodPerYear}%</TableCell>
-                      <TableCell>{assessment.dataClassification}</TableCell>
                       <TableCell>{assessment.riskOwner}</TableCell>
                       <TableCell>
                         {assessment.createdAt.toLocaleDateString()}

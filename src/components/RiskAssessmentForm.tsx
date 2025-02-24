@@ -2,7 +2,7 @@
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { RiskAssessment, RISK_CATEGORIES, DATA_INTERFACES, DATA_LOCATIONS, DATA_CLASSIFICATIONS } from "@/types/risk";
+import { RiskAssessment, RISK_CATEGORIES, DATA_INTERFACES, DATA_LOCATIONS } from "@/types/risk";
 import { SelectField } from "./forms/SelectField";
 import { TextField } from "./forms/TextField";
 import { useServices } from "@/hooks/useServices";
@@ -21,6 +21,7 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
     defaultValues: {
       hasGlobalRevenueImpact: false,
       riskLevel: "low", // Set a default risk level since we're not showing it in the UI
+      dataClassification: "Internal", // Set a default data classification since we're not showing it in the UI
       ...initialValues,
     },
   });
@@ -100,17 +101,6 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
           name="mitigation"
           label="Current compensating control"
           type="textarea"
-        />
-
-        <SelectField
-          form={form}
-          name="dataClassification"
-          label="Data Classification"
-          placeholder="Select data classification"
-          options={DATA_CLASSIFICATIONS.map((classification) => ({
-            value: classification,
-            label: classification,
-          }))}
         />
 
         <TextField
