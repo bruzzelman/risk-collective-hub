@@ -9,58 +9,108 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PlusIcon, Trash2Icon } from "lucide-react";
+import { PlusIcon, Trash2Icon, PencilIcon } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { TextField } from "@/components/forms/TextField";
+import { SelectField } from "@/components/forms/SelectField";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Service } from "@/types/risk";
+import { useQuery } from "@tanstack/react-query";
 
-type ServiceFormData = Pick<Service, "name" | "description">;
+type ServiceFormData = Pick<Service, "name" | "description"> & {
+  divisionId?: string;
+};
 
 const ServicesManagement = () => {
   const { data: services = [], refetch } = useServices();
   const [open, setOpen] = useState(false);
+  const [editingService, setEditingService] = useState<Service | null>(null);
   const { toast } = useToast();
+
+  // Fetch divisions for the dropdown
+  const { data: divisions = [] } = useQuery({
+    queryKey: ['divisions'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('divisions')
+        .select('*');
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const form = useForm<ServiceFormData>({
     defaultValues: {
       name: "",
       description: "",
+      divisionId: undefined,
     },
   });
 
   const onSubmit = async (data: ServiceFormData) => {
     try {
-      const { error } = await supabase
-        .from("services")
-        .insert([{
-          name: data.name,
-          description: data.description,
-          created_by: (await supabase.auth.getUser()).data.user?.id,
-        }]);
+      if (editingService) {
+        // Update existing service
+        const { error } = await supabase
+          .from("services")
+          .update({
+            name: data.name,
+            description: data.description,
+            division_id: data.divisionId,
+          })
+          .eq("id", editingService.id);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      toast({
-        title: "Success",
-        description: "Service created successfully",
-      });
+        toast({
+          title: "Success",
+          description: "Service updated successfully",
+        });
+      } else {
+        // Create new service
+        const { error } = await supabase
+          .from("services")
+          .insert([{
+            name: data.name,
+            description: data.description,
+            division_id: data.divisionId,
+            created_by: (await supabase.auth.getUser()).data.user?.id,
+          }]);
+
+        if (error) throw error;
+
+        toast({
+          title: "Success",
+          description: "Service created successfully",
+        });
+      }
       
       form.reset();
       setOpen(false);
+      setEditingService(null);
       refetch();
     } catch (error) {
-      console.error("Error creating service:", error);
+      console.error("Error saving service:", error);
       toast({
         title: "Error",
-        description: "Failed to create service",
+        description: "Failed to save service",
         variant: "destructive",
       });
     }
+  };
+
+  const handleEdit = (service: Service) => {
+    setEditingService(service);
+    form.reset({
+      name: service.name,
+      description: service.description,
+      divisionId: service.divisionId,
+    });
+    setOpen(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -88,11 +138,23 @@ const ServicesManagement = () => {
     }
   };
 
+  const handleDialogClose = (open: boolean) => {
+    if (!open) {
+      setEditingService(null);
+      form.reset({
+        name: "",
+        description: "",
+        divisionId: undefined,
+      });
+    }
+    setOpen(open);
+  };
+
   return (
     <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Services Management</h1>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={handleDialogClose}>
           <DialogTrigger asChild>
             <Button>
               <PlusIcon className="mr-2 h-4 w-4" />
@@ -101,7 +163,7 @@ const ServicesManagement = () => {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add New Service</DialogTitle>
+              <DialogTitle>{editingService ? 'Edit Service' : 'Add New Service'}</DialogTitle>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -117,7 +179,19 @@ const ServicesManagement = () => {
                   label="Description"
                   type="textarea"
                 />
-                <Button type="submit">Create Service</Button>
+                <SelectField
+                  form={form}
+                  name="divisionId"
+                  label="Division"
+                  placeholder="Select a division"
+                  options={divisions.map(div => ({
+                    value: div.id,
+                    label: div.name,
+                  }))}
+                />
+                <Button type="submit">
+                  {editingService ? 'Update Service' : 'Create Service'}
+                </Button>
               </form>
             </Form>
           </DialogContent>
@@ -129,25 +203,39 @@ const ServicesManagement = () => {
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Description</TableHead>
-            <TableHead className="w-[100px]">Actions</TableHead>
+            <TableHead>Division</TableHead>
+            <TableHead className="w-[150px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {services.map((service) => (
-            <TableRow key={service.id}>
-              <TableCell>{service.name}</TableCell>
-              <TableCell>{service.description}</TableCell>
-              <TableCell>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleDelete(service.id)}
-                >
-                  <Trash2Icon className="h-4 w-4" />
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
+          {services.map((service) => {
+            const division = divisions.find(d => d.id === service.divisionId);
+            return (
+              <TableRow key={service.id}>
+                <TableCell>{service.name}</TableCell>
+                <TableCell>{service.description}</TableCell>
+                <TableCell>{division?.name || 'Not assigned'}</TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEdit(service)}
+                    >
+                      <PencilIcon className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDelete(service.id)}
+                    >
+                      <Trash2Icon className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>
