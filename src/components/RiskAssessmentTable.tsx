@@ -14,11 +14,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import RiskLevelBadge from "./RiskLevelBadge";
 import { RiskAssessment } from "@/types/risk";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Pencil } from "lucide-react";
 
 interface RiskAssessmentTableProps {
   assessments: RiskAssessment[];
@@ -74,6 +76,11 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
     };
   };
 
+  const handleEdit = (assessment: RiskAssessment) => {
+    console.log("Edit assessment:", assessment);
+    // TODO: Implement edit functionality
+  };
+
   const filteredAssessments = assessments.filter((assessment) => {
     const serviceDetails = getServiceDetails(assessment.serviceId);
     return (
@@ -116,6 +123,7 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
                 <TableHead>Data Classification</TableHead>
                 <TableHead>Risk Owner</TableHead>
                 <TableHead>Date Added</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -140,6 +148,16 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
                     <TableCell>{assessment.riskOwner}</TableCell>
                     <TableCell>
                       {assessment.createdAt.toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEdit(assessment)}
+                        className="h-8 w-8"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );
