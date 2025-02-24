@@ -71,9 +71,11 @@ export type Database = {
           created_by: string
           data_classification: string
           data_interface: string
+          data_location: string
           division_id: string | null
           id: string
           impact: string
+          likelihood_per_year: number
           mitigation: string
           risk_category: string
           risk_description: string
@@ -86,9 +88,11 @@ export type Database = {
           created_by: string
           data_classification: string
           data_interface?: string
+          data_location?: string
           division_id?: string | null
           id?: string
           impact: string
+          likelihood_per_year?: number
           mitigation: string
           risk_category: string
           risk_description: string
@@ -101,9 +105,11 @@ export type Database = {
           created_by?: string
           data_classification?: string
           data_interface?: string
+          data_location?: string
           division_id?: string | null
           id?: string
           impact?: string
+          likelihood_per_year?: number
           mitigation?: string
           risk_category?: string
           risk_description?: string

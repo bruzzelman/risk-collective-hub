@@ -50,6 +50,7 @@ const IndexPage = () => {
         dataClassification: assessment.data_classification,
         riskOwner: assessment.risk_owner,
         createdAt: new Date(assessment.created_at),
+        divisionId: assessment.division_id,
       }));
     },
   });
