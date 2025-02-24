@@ -25,6 +25,33 @@ type ServiceFormData = Pick<Service, "name" | "description"> & {
   divisionId?: string;
 };
 
+const DEFAULT_RISK_ASSESSMENTS = [
+  {
+    risk_category: "Error",
+    risk_description: "Administrator unintentionally deletes core infrastructure",
+    risk_level: "high",
+    data_classification: "Internal",
+    risk_owner: "Service Owner",
+    mitigation: "Infrastructure as Code, Backup and Recovery procedures",
+    data_interface: "Infrastructure",
+    data_location: "Cloud",
+    likelihood_per_year: 1,
+    revenue_impact: "unclear",
+  },
+  {
+    risk_category: "Error",
+    risk_description: "Administrator unintentionally exposes PI data",
+    risk_level: "high",
+    data_classification: "Confidential",
+    risk_owner: "Service Owner",
+    mitigation: "Access Controls, Data Classification, Encryption",
+    data_interface: "Data Storage",
+    data_location: "Cloud",
+    likelihood_per_year: 1,
+    revenue_impact: "unclear",
+  }
+];
+
 const ServicesManagement = () => {
   const { data: services = [], refetch } = useServices();
   const [open, setOpen] = useState(false);
@@ -51,6 +78,26 @@ const ServicesManagement = () => {
     },
   });
 
+  const createDefaultRiskAssessments = async (serviceId: string, divisionId: string | undefined, userId: string) => {
+    try {
+      const riskAssessments = DEFAULT_RISK_ASSESSMENTS.map(assessment => ({
+        ...assessment,
+        service_id: serviceId,
+        division_id: divisionId,
+        created_by: userId,
+      }));
+
+      const { error } = await supabase
+        .from("risk_assessments")
+        .insert(riskAssessments);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error("Error creating default risk assessments:", error);
+      throw error;
+    }
+  };
+
   const onSubmit = async (data: ServiceFormData) => {
     try {
       if (editingService) {
@@ -72,20 +119,28 @@ const ServicesManagement = () => {
         });
       } else {
         // Create new service
-        const { error } = await supabase
+        const userId = (await supabase.auth.getUser()).data.user?.id;
+        if (!userId) throw new Error("User not authenticated");
+
+        const { data: newService, error } = await supabase
           .from("services")
           .insert([{
             name: data.name,
             description: data.description,
             division_id: data.divisionId,
-            created_by: (await supabase.auth.getUser()).data.user?.id,
-          }]);
+            created_by: userId,
+          }])
+          .select()
+          .single();
 
         if (error) throw error;
 
+        // Create default risk assessments for the new service
+        await createDefaultRiskAssessments(newService.id, data.divisionId, userId);
+
         toast({
           title: "Success",
-          description: "Service created successfully",
+          description: "Service and default risk assessments created successfully",
         });
       }
       
