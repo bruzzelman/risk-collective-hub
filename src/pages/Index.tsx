@@ -45,7 +45,6 @@ const IndexPage = () => {
         dataLocation: assessment.data_location,
         likelihoodPerYear: Number(assessment.likelihood_per_year),
         riskLevel: assessment.risk_level as RiskAssessment['riskLevel'],
-        impact: assessment.impact,
         mitigation: assessment.mitigation,
         dataClassification: assessment.data_classification,
         riskOwner: assessment.risk_owner,
@@ -74,23 +73,19 @@ const IndexPage = () => {
   }, [error, toast]);
 
   const handleFormSubmit = async (data: Omit<RiskAssessment, "id" | "createdAt">) => {
-    // Here you would typically handle the form submission, e.g., sending the data to an API
     console.log("Form submitted with data:", data);
 
-    // Optimistically update the assessments state
     setAssessments((prevAssessments) => [
       ...prevAssessments,
       {
         ...data,
-        id: Math.random().toString(), // Temporary ID
+        id: Math.random().toString(),
         createdAt: new Date(),
       } as RiskAssessment,
     ]);
 
-    // Close the form
     setIsFormOpen(false);
 
-    // Show a success toast
     toast({
       title: "Success",
       description: "Risk assessment added successfully!",

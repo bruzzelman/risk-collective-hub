@@ -76,7 +76,6 @@ export type Database = {
           global_revenue_impact_hours: number | null
           has_global_revenue_impact: boolean | null
           id: string
-          impact: string
           likelihood_per_year: number
           mitigation: string
           risk_category: string
@@ -95,7 +94,6 @@ export type Database = {
           global_revenue_impact_hours?: number | null
           has_global_revenue_impact?: boolean | null
           id?: string
-          impact: string
           likelihood_per_year?: number
           mitigation: string
           risk_category: string
@@ -114,7 +112,6 @@ export type Database = {
           global_revenue_impact_hours?: number | null
           has_global_revenue_impact?: boolean | null
           id?: string
-          impact?: string
           likelihood_per_year?: number
           mitigation?: string
           risk_category?: string
