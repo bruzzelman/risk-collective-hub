@@ -33,7 +33,6 @@ export const useRiskAssessmentSubmit = (
           data_location: values.dataLocation,
           likelihood_per_year: values.likelihoodPerYear,
           risk_level: values.riskLevel,
-          impact: values.impact,
           mitigation: values.mitigation,
           data_classification: values.dataClassification,
           risk_owner: values.riskOwner,

@@ -38,7 +38,6 @@ export type RiskAssessment = {
   dataLocation: string;
   likelihoodPerYear: number;
   riskLevel: RiskLevel;
-  impact: string;
   mitigation: string;
   dataClassification: string;
   riskOwner: string;

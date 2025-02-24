@@ -107,13 +107,6 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
 
         <TextField
           form={form}
-          name="impact"
-          label="Impact"
-          type="textarea"
-        />
-
-        <TextField
-          form={form}
           name="mitigation"
           label="Current compensating control"
           type="textarea"
