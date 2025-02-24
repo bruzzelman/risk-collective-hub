@@ -20,6 +20,7 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
   const form = useForm<Omit<RiskAssessment, "id" | "createdAt">>({
     defaultValues: {
       hasGlobalRevenueImpact: false,
+      hasLocalRevenueImpact: false,
       riskLevel: "low", // Set a default risk level since we're not showing it in the UI
       dataClassification: "Internal", // Set a default data classification since we're not showing it in the UI
       ...initialValues,
@@ -31,6 +32,11 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
   const hasGlobalRevenueImpact = useWatch({
     control: form.control,
     name: "hasGlobalRevenueImpact",
+  });
+
+  const hasLocalRevenueImpact = useWatch({
+    control: form.control,
+    name: "hasLocalRevenueImpact",
   });
 
   return (
@@ -109,29 +115,55 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
           label="Risk Owner"
         />
 
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="hasGlobalRevenueImpact"
-            checked={hasGlobalRevenueImpact}
-            onCheckedChange={(checked) => {
-              form.setValue("hasGlobalRevenueImpact", checked === true);
-              if (!checked) {
-                form.setValue("globalRevenueImpactHours", undefined);
-              }
-            }}
-          />
-          <Label htmlFor="hasGlobalRevenueImpact">Global revenue impact</Label>
-        </div>
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="hasGlobalRevenueImpact"
+              checked={hasGlobalRevenueImpact}
+              onCheckedChange={(checked) => {
+                form.setValue("hasGlobalRevenueImpact", checked === true);
+                if (!checked) {
+                  form.setValue("globalRevenueImpactHours", undefined);
+                }
+              }}
+            />
+            <Label htmlFor="hasGlobalRevenueImpact">Global revenue impact</Label>
+          </div>
 
-        {hasGlobalRevenueImpact && (
-          <TextField
-            form={form}
-            name="globalRevenueImpactHours"
-            label="Hours of global revenue impact"
-            type="number"
-            min={0}
-          />
-        )}
+          {hasGlobalRevenueImpact && (
+            <TextField
+              form={form}
+              name="globalRevenueImpactHours"
+              label="Hours of global revenue impact"
+              type="number"
+              min={0}
+            />
+          )}
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="hasLocalRevenueImpact"
+              checked={hasLocalRevenueImpact}
+              onCheckedChange={(checked) => {
+                form.setValue("hasLocalRevenueImpact", checked === true);
+                if (!checked) {
+                  form.setValue("localRevenueImpactHours", undefined);
+                }
+              }}
+            />
+            <Label htmlFor="hasLocalRevenueImpact">Local revenue impact</Label>
+          </div>
+
+          {hasLocalRevenueImpact && (
+            <TextField
+              form={form}
+              name="localRevenueImpactHours"
+              label="Hours of local revenue impact"
+              type="number"
+              min={0}
+            />
+          )}
+        </div>
 
         <Button type="submit">{initialValues ? 'Update' : 'Submit'}</Button>
       </form>

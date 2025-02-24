@@ -1,4 +1,3 @@
-
 export type RiskLevel = "low" | "medium" | "high" | "critical";
 
 export type Team = {
@@ -45,6 +44,8 @@ export type RiskAssessment = {
   divisionId?: string;
   hasGlobalRevenueImpact: boolean;
   globalRevenueImpactHours?: number;
+  hasLocalRevenueImpact: boolean;
+  localRevenueImpactHours?: number;
 };
 
 export const RISK_CATEGORIES = [
