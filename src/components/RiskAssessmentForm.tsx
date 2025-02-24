@@ -10,12 +10,15 @@ import { useRiskAssessmentSubmit } from "@/hooks/useRiskAssessmentSubmit";
 
 interface RiskAssessmentFormProps {
   onSubmit: (data: Omit<RiskAssessment, "id" | "createdAt">) => void;
+  initialValues?: Omit<RiskAssessment, "id" | "createdAt">;
 }
 
-const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
-  const form = useForm<Omit<RiskAssessment, "id" | "createdAt">>();
+const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps) => {
+  const form = useForm<Omit<RiskAssessment, "id" | "createdAt">>({
+    defaultValues: initialValues,
+  });
   const { data: services = [] } = useServices();
-  const handleSubmit = useRiskAssessmentSubmit(form, onSubmit);
+  const handleSubmit = initialValues ? onSubmit : useRiskAssessmentSubmit(form, onSubmit);
 
   return (
     <Form {...form}>
@@ -122,7 +125,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
           label="Risk Owner"
         />
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit">{initialValues ? 'Update' : 'Submit'}</Button>
       </form>
     </Form>
   );
