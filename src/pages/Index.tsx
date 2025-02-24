@@ -15,6 +15,7 @@ import ServicesManagement from "./ServicesManagement";
 import DataClassificationDistribution from "@/components/charts/DataClassificationDistribution";
 import RiskLevelDistribution from "@/components/charts/RiskLevelDistribution";
 import RiskCategoryDistribution from "@/components/charts/RiskCategoryDistribution";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const IndexPage = () => {
   const { toast } = useToast();
@@ -22,6 +23,40 @@ const IndexPage = () => {
   const navigate = useNavigate();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [assessments, setAssessments] = useState<RiskAssessment[]>([]);
+
+  // Template risks data
+  const templateRisks = [
+    {
+      name: "Payment Processing Failure",
+      category: "Error",
+      description: "Critical failure in the payment processing system",
+      lossEventCategory: "Business Disruption and System Failures"
+    },
+    {
+      name: "Data Breach",
+      category: "Malicious",
+      description: "Unauthorized access to sensitive customer data",
+      lossEventCategory: "External Fraud"
+    },
+    {
+      name: "System Downtime",
+      category: "Failure",
+      description: "Unplanned system outage affecting service availability",
+      lossEventCategory: "Business Disruption and System Failures"
+    },
+    {
+      name: "Process Error",
+      category: "Error",
+      description: "Manual process execution error",
+      lossEventCategory: "Execution, Delivery & Process Management"
+    },
+    {
+      name: "Internal Fraud",
+      category: "Malicious",
+      description: "Intentional misuse of system access by employees",
+      lossEventCategory: "Internal Fraud"
+    }
+  ];
 
   useEffect(() => {
     if (!user) {
@@ -119,6 +154,7 @@ const IndexPage = () => {
               <TabsTrigger value="assessments">Risk Assessments</TabsTrigger>
               <TabsTrigger value="services">Services</TabsTrigger>
               <TabsTrigger value="reporting">Reporting</TabsTrigger>
+              <TabsTrigger value="templates">Templates</TabsTrigger>
             </TabsList>
 
             <TabsContent value="assessments">
@@ -169,6 +205,36 @@ const IndexPage = () => {
                 </Card>
               </div>
             </TabsContent>
+
+            <TabsContent value="templates">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Risk Templates</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Risk Name</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead>Loss Event Category</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {templateRisks.map((risk, index) => (
+                        <TableRow key={index}>
+                          <TableCell className="font-medium">{risk.name}</TableCell>
+                          <TableCell>{risk.category}</TableCell>
+                          <TableCell>{risk.description}</TableCell>
+                          <TableCell>{risk.lossEventCategory}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </TabsContent>
           </Tabs>
         </CardContent>
       </Card>
@@ -177,3 +243,4 @@ const IndexPage = () => {
 };
 
 export default IndexPage;
+
