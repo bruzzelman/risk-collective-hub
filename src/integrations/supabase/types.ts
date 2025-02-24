@@ -75,8 +75,10 @@ export type Database = {
           division_id: string | null
           global_revenue_impact_hours: number | null
           has_global_revenue_impact: boolean | null
+          has_local_revenue_impact: boolean | null
           id: string
           likelihood_per_year: number
+          local_revenue_impact_hours: number | null
           mitigation: string
           risk_category: string
           risk_description: string
@@ -93,8 +95,10 @@ export type Database = {
           division_id?: string | null
           global_revenue_impact_hours?: number | null
           has_global_revenue_impact?: boolean | null
+          has_local_revenue_impact?: boolean | null
           id?: string
           likelihood_per_year?: number
+          local_revenue_impact_hours?: number | null
           mitigation: string
           risk_category: string
           risk_description: string
@@ -111,8 +115,10 @@ export type Database = {
           division_id?: string | null
           global_revenue_impact_hours?: number | null
           has_global_revenue_impact?: boolean | null
+          has_local_revenue_impact?: boolean | null
           id?: string
           likelihood_per_year?: number
+          local_revenue_impact_hours?: number | null
           mitigation?: string
           risk_category?: string
           risk_description?: string

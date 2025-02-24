@@ -52,6 +52,8 @@ const IndexPage = () => {
         divisionId: assessment.division_id,
         hasGlobalRevenueImpact: assessment.has_global_revenue_impact,
         globalRevenueImpactHours: assessment.global_revenue_impact_hours,
+        hasLocalRevenueImpact: assessment.has_local_revenue_impact,
+        localRevenueImpactHours: assessment.local_revenue_impact_hours,
       }));
     },
   });

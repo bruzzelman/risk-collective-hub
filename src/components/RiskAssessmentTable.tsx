@@ -108,6 +108,8 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
           risk_owner: data.riskOwner,
           has_global_revenue_impact: data.hasGlobalRevenueImpact,
           global_revenue_impact_hours: data.globalRevenueImpactHours,
+          has_local_revenue_impact: data.hasLocalRevenueImpact,
+          local_revenue_impact_hours: data.localRevenueImpactHours,
         })
         .eq('id', editingAssessment.id);
 
@@ -232,6 +234,8 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
                 riskOwner: editingAssessment.riskOwner,
                 hasGlobalRevenueImpact: editingAssessment.hasGlobalRevenueImpact,
                 globalRevenueImpactHours: editingAssessment.globalRevenueImpactHours,
+                hasLocalRevenueImpact: editingAssessment.hasLocalRevenueImpact,
+                localRevenueImpactHours: editingAssessment.localRevenueImpactHours,
               }}
             />
           )}
