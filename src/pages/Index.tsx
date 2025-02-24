@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
 import RiskAssessmentForm from "@/components/RiskAssessmentForm";
-import { RiskAssessment } from "@/types/risk";
+import { RiskAssessment, RevenueImpact } from "@/types/risk";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import { useNavigate } from "react-router-dom";
@@ -50,7 +50,7 @@ const IndexPage = () => {
         riskOwner: assessment.risk_owner,
         createdAt: new Date(assessment.created_at),
         divisionId: assessment.division_id,
-        revenueImpact: assessment.revenue_impact,
+        revenueImpact: assessment.revenue_impact as RevenueImpact,
         hasGlobalRevenueImpact: assessment.has_global_revenue_impact,
         globalRevenueImpactHours: assessment.global_revenue_impact_hours,
         hasLocalRevenueImpact: assessment.has_local_revenue_impact,
