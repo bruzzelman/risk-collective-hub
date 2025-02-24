@@ -391,7 +391,7 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="name">Service/Product Name</Label>
+                <Label htmlFor="name">Product / Service name</Label>
                 <Input
                   id="name"
                   name="name"
