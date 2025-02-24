@@ -36,7 +36,6 @@ export const RevenueImpactSection = ({ form }: RevenueImpactSectionProps) => {
         label="Revenue Impact"
         placeholder="Select revenue impact"
         options={[
-          { value: "", label: "Select an option" },
           { value: "yes", label: "Yes" },
           { value: "no", label: "No" },
           { value: "unclear", label: "Unclear" },
