@@ -41,6 +41,7 @@ const Index = () => {
         serviceId: assessment.service_id,
         riskCategory: assessment.risk_category,
         riskDescription: assessment.risk_description,
+        dataInterface: assessment.data_interface,
         riskLevel: assessment.risk_level as RiskAssessment['riskLevel'],
         impact: assessment.impact,
         mitigation: assessment.mitigation,
