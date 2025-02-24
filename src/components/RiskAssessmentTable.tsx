@@ -1,4 +1,3 @@
-
 import {
   Table,
   TableBody,
@@ -107,7 +106,7 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
                 <TableHead>Service Name</TableHead>
                 <TableHead>Division</TableHead>
                 <TableHead>Team</TableHead>
-                <TableHead>Risk Category</TableHead>
+                <TableHead>Loss event category</TableHead>
                 <TableHead>Risk Level</TableHead>
                 <TableHead>Data Classification</TableHead>
                 <TableHead>Risk Owner</TableHead>

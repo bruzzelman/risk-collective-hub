@@ -489,13 +489,13 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
               {selectedServiceId ? (
                 <>
                   <div className="space-y-2">
-                    <Label htmlFor="riskCategory">Risk Category</Label>
+                    <Label htmlFor="riskCategory">Loss event category</Label>
                     <Select
                       value={currentRisk.riskCategory}
                       onValueChange={(value) => handleRiskSelectChange("riskCategory", value)}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select risk category" />
+                        <SelectValue placeholder="Select loss event category" />
                       </SelectTrigger>
                       <SelectContent>
                         {RISK_CATEGORIES.map((category) => (
@@ -508,13 +508,13 @@ const RiskAssessmentForm = ({ onSubmit }: RiskAssessmentFormProps) => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="riskDescription">Risk Description</Label>
+                    <Label htmlFor="riskDescription">Loss event description</Label>
                     <Textarea
                       id="riskDescription"
                       name="riskDescription"
                       value={currentRisk.riskDescription}
                       onChange={handleRiskChange}
-                      placeholder="Describe the risk"
+                      placeholder="Describe the loss event"
                     />
                   </div>
 

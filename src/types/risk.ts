@@ -43,13 +43,9 @@ export type RiskAssessment = {
 };
 
 export const RISK_CATEGORIES = [
-  "Security",
-  "Privacy",
-  "Operational",
-  "Financial",
-  "Compliance",
-  "Technical",
-  "Strategic",
+  "Error",
+  "Failure",
+  "Malicious",
 ] as const;
 
 export const DATA_CLASSIFICATIONS = [
