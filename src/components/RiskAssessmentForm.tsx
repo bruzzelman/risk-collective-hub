@@ -23,7 +23,7 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
       hasLocalRevenueImpact: false,
       riskLevel: "low",
       dataClassification: "Internal",
-      revenueImpact: "unclear",
+      revenueImpact: undefined,
       ...initialValues,
     },
   });
@@ -146,6 +146,7 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
           label="Revenue Impact"
           placeholder="Select revenue impact"
           options={[
+            { value: "", label: "Select an option" },
             { value: "yes", label: "Yes" },
             { value: "no", label: "No" },
             { value: "unclear", label: "Unclear" },
