@@ -10,6 +10,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import ServicesManagement from "./ServicesManagement";
 
 const IndexPage = () => {
   const { toast } = useToast();
@@ -105,17 +107,30 @@ const IndexPage = () => {
           <CardTitle>Risk Assessment Tool</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex justify-end mb-4">
-            <Button onClick={() => setIsFormOpen(true)}>Add Risk Assessment</Button>
-          </div>
+          <Tabs defaultValue="assessments" className="space-y-4">
+            <TabsList>
+              <TabsTrigger value="assessments">Risk Assessments</TabsTrigger>
+              <TabsTrigger value="services">Services</TabsTrigger>
+            </TabsList>
 
-          {isFormOpen && (
-            <div className="mb-8">
-              <RiskAssessmentForm onSubmit={handleFormSubmit} />
-            </div>
-          )}
+            <TabsContent value="assessments">
+              <div className="flex justify-end mb-4">
+                <Button onClick={() => setIsFormOpen(true)}>Add Risk Assessment</Button>
+              </div>
 
-          <RiskAssessmentTable assessments={assessments} />
+              {isFormOpen && (
+                <div className="mb-8">
+                  <RiskAssessmentForm onSubmit={handleFormSubmit} />
+                </div>
+              )}
+
+              <RiskAssessmentTable assessments={assessments} />
+            </TabsContent>
+
+            <TabsContent value="services">
+              <ServicesManagement />
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
     </div>
