@@ -1,3 +1,4 @@
+
 import RiskAssessmentTable from "@/components/RiskAssessmentTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ServicesManagement from "./ServicesManagement";
+import TeamsManagement from "./TeamsManagement";
 import DataClassificationDistribution from "@/components/charts/DataClassificationDistribution";
 import RiskLevelDistribution from "@/components/charts/RiskLevelDistribution";
 import RiskCategoryDistribution from "@/components/charts/RiskCategoryDistribution";
@@ -231,6 +233,7 @@ const IndexPage = () => {
               <TabsList>
                 <TabsTrigger value="assessments">Risk Assessments</TabsTrigger>
                 <TabsTrigger value="services">Services</TabsTrigger>
+                <TabsTrigger value="teams">Teams</TabsTrigger>
                 <TabsTrigger value="reporting">Reporting</TabsTrigger>
                 <TabsTrigger value="standard-risks">Standard Risks</TabsTrigger>
               </TabsList>
@@ -251,6 +254,10 @@ const IndexPage = () => {
 
               <TabsContent value="services">
                 <ServicesManagement />
+              </TabsContent>
+
+              <TabsContent value="teams">
+                <TeamsManagement />
               </TabsContent>
 
               <TabsContent value="reporting">
