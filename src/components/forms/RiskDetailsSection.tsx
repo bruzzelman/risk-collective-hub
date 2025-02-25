@@ -46,7 +46,7 @@ export const RiskDetailsSection = ({ form }: RiskDetailsSectionProps) => {
           options={[
             { value: "less_than_1m", label: "Less than 1,000,000 rows" },
             { value: "between_1m_and_99m", label: "Between 1,000,000 and 99,000,000 rows" },
-            { value: "more_than_99m", label: "More than 99,000,000,000 rows" },
+            { value: "more_than_99m", label: "More than 90,000,000 rows" },
             { value: "unknown", label: "Unknown" },
           ]}
         />
