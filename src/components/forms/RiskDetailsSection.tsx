@@ -30,13 +30,6 @@ export const RiskDetailsSection = ({ form }: RiskDetailsSectionProps) => {
 
       <TextField
         form={form}
-        name="riskOwner"
-        label="Risk Owner"
-        required
-      />
-
-      <TextField
-        form={form}
         name="hoursToRemediate"
         label="Hours to remediate"
         type="number"
@@ -53,3 +46,4 @@ export const RiskDetailsSection = ({ form }: RiskDetailsSectionProps) => {
     </>
   );
 };
+
