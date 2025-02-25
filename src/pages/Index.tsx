@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
 import RiskAssessmentForm from "@/components/RiskAssessmentForm";
-import { RiskAssessment, RevenueImpact } from "@/types/risk";
+import { RiskAssessment, RevenueImpact, PIDataAtRisk, PIDataAmount } from "@/types/risk";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import { useNavigate } from "react-router-dom";
@@ -99,8 +99,8 @@ const IndexPage = () => {
         localRevenueImpactHours: assessment.local_revenue_impact_hours,
         hoursToRemediate: assessment.hours_to_remediate,
         additionalLossEventCosts: assessment.additional_loss_event_costs,
-        piDataAtRisk: assessment.pi_data_at_risk || "no",
-        piDataAmount: assessment.pi_data_amount,
+        piDataAtRisk: assessment.pi_data_at_risk as PIDataAtRisk || "no",
+        piDataAmount: assessment.pi_data_amount as PIDataAmount,
       }));
     },
   });
