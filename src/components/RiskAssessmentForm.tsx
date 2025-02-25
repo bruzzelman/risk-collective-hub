@@ -23,6 +23,7 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
       dataClassification: "Internal",
       revenueImpact: "unclear",
       likelihoodPerYear: 1,
+      piDataAtRisk: "no",
       ...initialValues,
     },
   });
