@@ -93,6 +93,15 @@ export const RevenueImpactSection = ({ form }: RevenueImpactSectionProps) => {
           )}
         </div>
       )}
+
+      <TextField
+        form={form}
+        name="mitigation"
+        label="Current compensating control"
+        type="textarea"
+        required
+      />
     </>
   );
 };
+

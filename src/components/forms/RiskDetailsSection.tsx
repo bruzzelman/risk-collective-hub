@@ -22,14 +22,6 @@ export const RiskDetailsSection = ({ form }: RiskDetailsSectionProps) => {
 
       <TextField
         form={form}
-        name="mitigation"
-        label="Current compensating control"
-        type="textarea"
-        required
-      />
-
-      <TextField
-        form={form}
         name="hoursToRemediate"
         label="Hours to remediate"
         type="number"
