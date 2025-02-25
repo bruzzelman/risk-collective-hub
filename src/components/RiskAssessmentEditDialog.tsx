@@ -45,6 +45,8 @@ const RiskAssessmentEditDialog = ({
             globalRevenueImpactHours: assessment.globalRevenueImpactHours,
             hasLocalRevenueImpact: assessment.hasLocalRevenueImpact,
             localRevenueImpactHours: assessment.localRevenueImpactHours,
+            piDataAtRisk: assessment.piDataAtRisk,
+            piDataAmount: assessment.piDataAmount,
           }}
         />
       </DialogContent>

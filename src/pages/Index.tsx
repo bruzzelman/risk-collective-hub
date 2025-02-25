@@ -99,6 +99,8 @@ const IndexPage = () => {
         localRevenueImpactHours: assessment.local_revenue_impact_hours,
         hoursToRemediate: assessment.hours_to_remediate,
         additionalLossEventCosts: assessment.additional_loss_event_costs,
+        piDataAtRisk: assessment.pi_data_at_risk || "no",
+        piDataAmount: assessment.pi_data_amount,
       }));
     },
   });
