@@ -1,6 +1,6 @@
 
 import { UseFormReturn, useWatch } from "react-hook-form";
-import { RiskAssessment } from "@/types/risk";
+import { RiskAssessment, PIDataAtRisk, PIDataAmount } from "@/types/risk";
 import { TextField } from "./TextField";
 import { SelectField } from "./SelectField";
 
@@ -12,7 +12,7 @@ export const RiskDetailsSection = ({ form }: RiskDetailsSectionProps) => {
   const piDataAtRisk = useWatch({
     control: form.control,
     name: "piDataAtRisk",
-  });
+  }) as PIDataAtRisk;
 
   return (
     <>
