@@ -54,10 +54,15 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
           mitigation: data.mitigation,
           data_classification: data.dataClassification,
           risk_owner: data.riskOwner,
+          revenue_impact: data.revenueImpact,
           has_global_revenue_impact: data.hasGlobalRevenueImpact,
           global_revenue_impact_hours: data.globalRevenueImpactHours,
           has_local_revenue_impact: data.hasLocalRevenueImpact,
           local_revenue_impact_hours: data.localRevenueImpactHours,
+          pi_data_at_risk: data.piDataAtRisk,
+          pi_data_amount: data.piDataAmount,
+          hours_to_remediate: data.hoursToRemediate,
+          additional_loss_event_costs: data.additionalLossEventCosts
         })
         .eq('id', editingAssessment.id);
 
@@ -71,6 +76,7 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
       queryClient.invalidateQueries({ queryKey: ['riskAssessments'] });
       setEditingAssessment(null);
     } catch (error) {
+      console.error('Error updating risk assessment:', error);
       toast({
         title: "Error",
         description: "Failed to update risk assessment",
@@ -153,3 +159,4 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
 };
 
 export default RiskAssessmentTable;
+
