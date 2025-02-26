@@ -51,7 +51,7 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
           data_location: data.dataLocation,
           likelihood_per_year: data.likelihoodPerYear,
           risk_level: data.riskLevel,
-          mitigation: data.mitigation,
+          mitigation: data.mitigation || '',
           data_classification: data.dataClassification,
           risk_owner: data.riskOwner,
           revenue_impact: data.revenueImpact,
@@ -66,14 +66,18 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
         })
         .eq('id', editingAssessment.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error details:', error);
+        throw error;
+      }
 
       toast({
         title: "Success",
         description: "Risk assessment updated successfully",
       });
 
-      queryClient.invalidateQueries({ queryKey: ['riskAssessments'] });
+      // Invalidate and refetch
+      await queryClient.invalidateQueries({ queryKey: ['riskAssessments'] });
       setEditingAssessment(null);
     } catch (error) {
       console.error('Error updating risk assessment:', error);
@@ -159,4 +163,3 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
 };
 
 export default RiskAssessmentTable;
-
