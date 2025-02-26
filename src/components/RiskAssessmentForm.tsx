@@ -27,10 +27,10 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
       revenueImpact: "unclear",
       likelihoodPerYear: 1,
       piDataAtRisk: "no" as const,
-      riskOwner: user?.email || '', // Set default risk owner to user's email
+      riskOwner: user?.email || '',
       dataInterface: "Not applicable",
       dataLocation: "Not applicable",
-      ...initialValues,
+      ...(initialValues || {}), // Make sure initialValues override defaults
     },
   });
   
@@ -55,4 +55,3 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
 };
 
 export default RiskAssessmentForm;
-

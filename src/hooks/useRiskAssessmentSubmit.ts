@@ -33,7 +33,7 @@ export const useRiskAssessmentSubmit = (
           data_location: values.dataLocation,
           likelihood_per_year: values.likelihoodPerYear,
           risk_level: values.riskLevel,
-          mitigation: values.mitigation,
+          mitigation: values.mitigation || '',
           data_classification: values.dataClassification,
           risk_owner: values.riskOwner,
           revenue_impact: values.revenueImpact,
@@ -48,7 +48,10 @@ export const useRiskAssessmentSubmit = (
           created_by: user.id
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error details:', error);
+        throw error;
+      }
 
       onSubmit(values);
       form.reset();

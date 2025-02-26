@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import RiskAssessmentForm from "./RiskAssessmentForm";
 
@@ -26,6 +27,9 @@ const RiskAssessmentEditDialog = ({
       <DialogContent className="max-w-3xl max-h-[90vh] h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Edit Risk Assessment</DialogTitle>
+          <DialogDescription>
+            Make changes to the risk assessment below.
+          </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-hidden">
           <RiskAssessmentForm
@@ -34,13 +38,13 @@ const RiskAssessmentEditDialog = ({
               serviceId: assessment.serviceId,
               riskCategory: assessment.riskCategory,
               riskDescription: assessment.riskDescription,
+              riskOwner: assessment.riskOwner,
               dataInterface: assessment.dataInterface,
               dataLocation: assessment.dataLocation,
               likelihoodPerYear: assessment.likelihoodPerYear,
               riskLevel: assessment.riskLevel,
               mitigation: assessment.mitigation,
               dataClassification: assessment.dataClassification,
-              riskOwner: assessment.riskOwner,
               revenueImpact: assessment.revenueImpact,
               hasGlobalRevenueImpact: assessment.hasGlobalRevenueImpact,
               globalRevenueImpactHours: assessment.globalRevenueImpactHours,
@@ -48,6 +52,8 @@ const RiskAssessmentEditDialog = ({
               localRevenueImpactHours: assessment.localRevenueImpactHours,
               piDataAtRisk: assessment.piDataAtRisk,
               piDataAmount: assessment.piDataAmount,
+              hoursToRemediate: assessment.hoursToRemediate,
+              additionalLossEventCosts: assessment.additionalLossEventCosts,
             }}
           />
         </div>
@@ -57,4 +63,3 @@ const RiskAssessmentEditDialog = ({
 };
 
 export default RiskAssessmentEditDialog;
-
