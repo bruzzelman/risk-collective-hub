@@ -76,7 +76,7 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
         .from('risk_assessments')
         .update(updateData)
         .eq('id', editingAssessment.id)
-        .select();
+        .select('*');
 
       if (error) {
         console.error('Supabase error:', error);
@@ -85,8 +85,19 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
 
       console.log('Update successful:', updatedData);
 
-      await queryClient.invalidateQueries({ queryKey: ['riskAssessments'] });
+      // Force a hard refresh of the risk assessments query
+      await queryClient.invalidateQueries({ 
+        queryKey: ['riskAssessments'],
+        refetchType: 'active',
+        exact: true
+      });
       
+      // Force an immediate refetch
+      await queryClient.refetchQueries({ 
+        queryKey: ['riskAssessments'],
+        exact: true
+      });
+
       toast({
         title: "Success",
         description: "Risk assessment updated successfully",
