@@ -126,6 +126,22 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
     );
   });
 
+  // If there are no assessments at all, show a message
+  if (!assessments.length) {
+    return (
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle>Risk Assessments</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8 text-gray-500">
+            No risk assessments found. Please add a service and create a risk assessment.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <>
       <Card className="w-full">
@@ -188,3 +204,4 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
 };
 
 export default RiskAssessmentTable;
+
