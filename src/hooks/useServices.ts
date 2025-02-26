@@ -7,10 +7,17 @@ export const useServices = () => {
   return useQuery({
     queryKey: ['services'],
     queryFn: async () => {
+      console.log('Fetching services...');
       const { data, error } = await supabase
         .from('services')
         .select('*');
-      if (error) throw error;
+      
+      if (error) {
+        console.error('Error fetching services:', error);
+        throw error;
+      }
+      
+      console.log('Services data:', data);
       
       // Transform the data to match the Service type
       return data.map((service): Service => ({
@@ -22,6 +29,7 @@ export const useServices = () => {
         createdAt: new Date(service.created_at),
         createdBy: service.created_by,
       }));
-    }
+    },
+    retry: false // Don't retry on failure so we can see errors
   });
 };

@@ -7,6 +7,7 @@ export const useRiskAssessments = (userId: string | undefined) => {
   return useQuery({
     queryKey: ['riskAssessments'],
     queryFn: async () => {
+      console.log('Fetching risk assessments for user:', userId);
       if (!userId) return [];
 
       const { data, error } = await supabase
@@ -14,7 +15,12 @@ export const useRiskAssessments = (userId: string | undefined) => {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching risk assessments:', error);
+        throw error;
+      }
+
+      console.log('Risk assessments data:', data);
 
       return data.map((assessment): RiskAssessment => ({
         id: assessment.id,
@@ -41,5 +47,6 @@ export const useRiskAssessments = (userId: string | undefined) => {
         piDataAmount: assessment.pi_data_amount as PIDataAmount,
       }));
     },
+    retry: false // Don't retry on failure so we can see errors
   });
 };
