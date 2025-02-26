@@ -34,56 +34,70 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
   const { getServiceDetails } = useServiceDetails();
 
   const handleEdit = (assessment: RiskAssessment) => {
+    console.log('Editing assessment:', assessment);
     setEditingAssessment(assessment);
   };
 
   const handleEditSubmit = async (data: Omit<RiskAssessment, "id" | "createdAt">) => {
-    if (!editingAssessment) return;
+    if (!editingAssessment) {
+      console.error('No editing assessment found');
+      return;
+    }
+
+    console.log('Submitting updated data:', data);
+    console.log('Original assessment:', editingAssessment);
 
     try {
-      const { error } = await supabase
+      const updateData = {
+        service_id: data.serviceId,
+        risk_category: data.riskCategory,
+        risk_description: data.riskDescription,
+        data_interface: data.dataInterface || 'Not applicable',
+        data_location: data.dataLocation || 'Not applicable',
+        likelihood_per_year: data.likelihoodPerYear || 1,
+        risk_level: data.riskLevel || 'low',
+        mitigation: data.mitigation || '',
+        data_classification: data.dataClassification || 'Internal',
+        risk_owner: data.riskOwner,
+        revenue_impact: data.revenueImpact || 'unclear',
+        has_global_revenue_impact: data.hasGlobalRevenueImpact || false,
+        global_revenue_impact_hours: data.globalRevenueImpactHours,
+        has_local_revenue_impact: data.hasLocalRevenueImpact || false,
+        local_revenue_impact_hours: data.localRevenueImpactHours,
+        pi_data_at_risk: data.piDataAtRisk || 'no',
+        pi_data_amount: data.piDataAmount,
+        hours_to_remediate: data.hoursToRemediate,
+        additional_loss_event_costs: data.additionalLossEventCosts
+      };
+
+      console.log('Sending update with data:', updateData);
+
+      const { data: updatedData, error } = await supabase
         .from('risk_assessments')
-        .update({
-          service_id: data.serviceId,
-          risk_category: data.riskCategory,
-          risk_description: data.riskDescription,
-          data_interface: data.dataInterface,
-          data_location: data.dataLocation,
-          likelihood_per_year: data.likelihoodPerYear,
-          risk_level: data.riskLevel,
-          mitigation: data.mitigation || '',
-          data_classification: data.dataClassification,
-          risk_owner: data.riskOwner,
-          revenue_impact: data.revenueImpact,
-          has_global_revenue_impact: data.hasGlobalRevenueImpact,
-          global_revenue_impact_hours: data.globalRevenueImpactHours,
-          has_local_revenue_impact: data.hasLocalRevenueImpact,
-          local_revenue_impact_hours: data.localRevenueImpactHours,
-          pi_data_at_risk: data.piDataAtRisk,
-          pi_data_amount: data.piDataAmount,
-          hours_to_remediate: data.hoursToRemediate,
-          additional_loss_event_costs: data.additionalLossEventCosts
-        })
-        .eq('id', editingAssessment.id);
+        .update(updateData)
+        .eq('id', editingAssessment.id)
+        .select();
 
       if (error) {
-        console.error('Error details:', error);
+        console.error('Supabase error:', error);
         throw error;
       }
 
+      console.log('Update successful:', updatedData);
+
+      await queryClient.invalidateQueries({ queryKey: ['riskAssessments'] });
+      
       toast({
         title: "Success",
         description: "Risk assessment updated successfully",
       });
 
-      // Invalidate and refetch
-      await queryClient.invalidateQueries({ queryKey: ['riskAssessments'] });
       setEditingAssessment(null);
     } catch (error) {
       console.error('Error updating risk assessment:', error);
       toast({
         title: "Error",
-        description: "Failed to update risk assessment",
+        description: "Failed to update risk assessment. Please check the console for details.",
         variant: "destructive",
       });
     }
