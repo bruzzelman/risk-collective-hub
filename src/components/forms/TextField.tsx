@@ -18,6 +18,7 @@ interface TextFieldProps {
   min?: number;
   max?: number;
   required?: boolean;
+  value?: string;
 }
 
 export const TextField = ({
@@ -28,11 +29,13 @@ export const TextField = ({
   min,
   max,
   required,
+  value,
 }: TextFieldProps) => {
   return (
     <FormField
       control={form.control}
       name={name}
+      defaultValue={value}
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}{required && <span className="text-destructive ml-1">*</span>}</FormLabel>

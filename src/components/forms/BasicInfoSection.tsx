@@ -50,7 +50,7 @@ export const BasicInfoSection = ({ form, services }: BasicInfoSectionProps) => {
         form={form}
         name="riskOwner"
         label="Risk Owner"
-        defaultValue={user?.email || ''}
+        value={user?.email || ''}
         required
       />
 
@@ -78,4 +78,3 @@ export const BasicInfoSection = ({ form, services }: BasicInfoSectionProps) => {
     </>
   );
 };
-
