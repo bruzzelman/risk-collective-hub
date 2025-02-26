@@ -4,6 +4,7 @@ import { RiskAssessment, DATA_INTERFACES, DATA_LOCATIONS, RISK_CATEGORIES } from
 import { SelectField } from "./SelectField";
 import { TextField } from "./TextField";
 import { Service } from "@/types/risk";
+import { useAuth } from "@/components/AuthProvider";
 
 interface BasicInfoSectionProps {
   form: UseFormReturn<Omit<RiskAssessment, "id" | "createdAt">>;
@@ -11,6 +12,8 @@ interface BasicInfoSectionProps {
 }
 
 export const BasicInfoSection = ({ form, services }: BasicInfoSectionProps) => {
+  const { user } = useAuth();
+
   return (
     <>
       <SelectField
@@ -40,6 +43,15 @@ export const BasicInfoSection = ({ form, services }: BasicInfoSectionProps) => {
         name="riskDescription"
         label="Risk Description"
         type="textarea"
+        required
+      />
+
+      <TextField
+        form={form}
+        name="riskOwner"
+        label="Risk Owner"
+        defaultValue={user?.email || ''}
+        required
       />
 
       <SelectField
@@ -66,3 +78,4 @@ export const BasicInfoSection = ({ form, services }: BasicInfoSectionProps) => {
     </>
   );
 };
+

@@ -8,6 +8,7 @@ import { useRiskAssessmentSubmit } from "@/hooks/useRiskAssessmentSubmit";
 import { BasicInfoSection } from "./forms/BasicInfoSection";
 import { RiskDetailsSection } from "./forms/RiskDetailsSection";
 import { RevenueImpactSection } from "./forms/RevenueImpactSection";
+import { useAuth } from "@/components/AuthProvider";
 
 interface RiskAssessmentFormProps {
   onSubmit: (data: Omit<RiskAssessment, "id" | "createdAt">) => void;
@@ -15,6 +16,8 @@ interface RiskAssessmentFormProps {
 }
 
 const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps) => {
+  const { user } = useAuth();
+  
   const form = useForm<Omit<RiskAssessment, "id" | "createdAt">>({
     defaultValues: {
       hasGlobalRevenueImpact: false,
@@ -24,6 +27,9 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
       revenueImpact: "unclear",
       likelihoodPerYear: 1,
       piDataAtRisk: "no" as const,
+      riskOwner: user?.email || '', // Set default risk owner to user's email
+      dataInterface: "Not applicable",
+      dataLocation: "Not applicable",
       ...initialValues,
     },
   });
