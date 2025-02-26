@@ -41,6 +41,8 @@ export const useRiskAssessmentSubmit = (
           global_revenue_impact_hours: values.globalRevenueImpactHours,
           has_local_revenue_impact: values.hasLocalRevenueImpact,
           local_revenue_impact_hours: values.localRevenueImpactHours,
+          pi_data_at_risk: values.piDataAtRisk,
+          pi_data_amount: values.piDataAmount,
           hours_to_remediate: values.hoursToRemediate,
           additional_loss_event_costs: values.additionalLossEventCosts,
           created_by: user.id
@@ -50,7 +52,13 @@ export const useRiskAssessmentSubmit = (
 
       onSubmit(values);
       form.reset();
+      
+      toast({
+        title: "Success",
+        description: "Risk assessment saved successfully",
+      });
     } catch (error) {
+      console.error('Error saving risk assessment:', error);
       toast({
         title: "Error",
         description: "Failed to save risk assessment",
