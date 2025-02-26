@@ -33,14 +33,20 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+      <form 
+        onSubmit={form.handleSubmit(handleSubmit)} 
+        className="space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto px-4"
+      >
         <BasicInfoSection form={form} services={services} />
         <RiskDetailsSection form={form} />
         <RevenueImpactSection form={form} />
-        <Button type="submit">{initialValues ? 'Update' : 'Submit'}</Button>
+        <div className="sticky bottom-0 py-4 bg-background border-t">
+          <Button type="submit">{initialValues ? 'Update' : 'Submit'}</Button>
+        </div>
       </form>
     </Form>
   );
 };
 
 export default RiskAssessmentForm;
+

@@ -23,35 +23,38 @@ const RiskAssessmentEditDialog = ({
 
   return (
     <Dialog open={!!assessment} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-3xl max-h-[90vh] h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Edit Risk Assessment</DialogTitle>
         </DialogHeader>
-        <RiskAssessmentForm
-          onSubmit={onSubmit}
-          initialValues={{
-            serviceId: assessment.serviceId,
-            riskCategory: assessment.riskCategory,
-            riskDescription: assessment.riskDescription,
-            dataInterface: assessment.dataInterface,
-            dataLocation: assessment.dataLocation,
-            likelihoodPerYear: assessment.likelihoodPerYear,
-            riskLevel: assessment.riskLevel,
-            mitigation: assessment.mitigation,
-            dataClassification: assessment.dataClassification,
-            riskOwner: assessment.riskOwner,
-            revenueImpact: assessment.revenueImpact,
-            hasGlobalRevenueImpact: assessment.hasGlobalRevenueImpact,
-            globalRevenueImpactHours: assessment.globalRevenueImpactHours,
-            hasLocalRevenueImpact: assessment.hasLocalRevenueImpact,
-            localRevenueImpactHours: assessment.localRevenueImpactHours,
-            piDataAtRisk: assessment.piDataAtRisk,
-            piDataAmount: assessment.piDataAmount,
-          }}
-        />
+        <div className="flex-1 overflow-hidden">
+          <RiskAssessmentForm
+            onSubmit={onSubmit}
+            initialValues={{
+              serviceId: assessment.serviceId,
+              riskCategory: assessment.riskCategory,
+              riskDescription: assessment.riskDescription,
+              dataInterface: assessment.dataInterface,
+              dataLocation: assessment.dataLocation,
+              likelihoodPerYear: assessment.likelihoodPerYear,
+              riskLevel: assessment.riskLevel,
+              mitigation: assessment.mitigation,
+              dataClassification: assessment.dataClassification,
+              riskOwner: assessment.riskOwner,
+              revenueImpact: assessment.revenueImpact,
+              hasGlobalRevenueImpact: assessment.hasGlobalRevenueImpact,
+              globalRevenueImpactHours: assessment.globalRevenueImpactHours,
+              hasLocalRevenueImpact: assessment.hasLocalRevenueImpact,
+              localRevenueImpactHours: assessment.localRevenueImpactHours,
+              piDataAtRisk: assessment.piDataAtRisk,
+              piDataAmount: assessment.piDataAmount,
+            }}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );
 };
 
 export default RiskAssessmentEditDialog;
+
