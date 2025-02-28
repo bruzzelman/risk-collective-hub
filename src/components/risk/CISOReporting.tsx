@@ -131,6 +131,8 @@ const CISOReporting = () => {
     }
   }, [assessments, services, getServiceDetails]);
 
+  console.log("CISO Report Metrics:", metrics);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-4">
