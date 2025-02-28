@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRiskAssessments } from "@/hooks/useRiskAssessments";
@@ -12,7 +13,8 @@ import {
   Map, 
   Shield, 
   ShieldAlert, 
-  Hourglass 
+  Hourglass,
+  EuroIcon
 } from "lucide-react";
 
 const CISOReporting = () => {
@@ -34,7 +36,9 @@ const CISOReporting = () => {
     daysSinceLastAssessment: 14,
     risksWithoutControls: 5,
     medianRecoveryTime: 24,
-    piRiskScore: 78
+    piRiskScore: 78,
+    estimatedGlobalRevenueRisk: "900k €",
+    estimatedLocalRevenueRisk: "400k €"
   });
 
   useEffect(() => {
@@ -118,7 +122,9 @@ const CISOReporting = () => {
           daysSinceLastAssessment,
           risksWithoutControls,
           medianRecoveryTime,
-          piRiskScore
+          piRiskScore,
+          estimatedGlobalRevenueRisk: "900k €",
+          estimatedLocalRevenueRisk: "400k €"
         });
       }
       // Otherwise, we keep the mock metrics
@@ -159,6 +165,20 @@ const CISOReporting = () => {
           value={metrics.customRisks} 
           icon={<AlertCircle className="h-5 w-5 text-purple-500" />} 
           description="Non-standard risk categories" 
+        />
+        
+        <MetricCard 
+          title="Est. Global Revenue Risk" 
+          value={metrics.estimatedGlobalRevenueRisk} 
+          icon={<Euro className="h-5 w-5 text-red-600" />} 
+          description="Potential financial impact globally" 
+        />
+        
+        <MetricCard 
+          title="Est. Local Revenue Risk" 
+          value={metrics.estimatedLocalRevenueRisk} 
+          icon={<Euro className="h-5 w-5 text-orange-600" />} 
+          description="Potential financial impact locally" 
         />
         
         <MetricCard 
@@ -219,6 +239,28 @@ const MetricCard = ({ title, value, icon, description }: MetricCardProps) => {
         <p className="text-xs text-muted-foreground">{description}</p>
       </CardContent>
     </Card>
+  );
+};
+
+// A Euro icon component since EuroIcon isn't available in lucide-react
+const Euro = ({ className }: { className?: string }) => {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      width="24" 
+      height="24" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className={className}
+    >
+      <path d="M4 10h12" />
+      <path d="M4 14h9" />
+      <path d="M19 6a7.7 7.7 0 0 0-5.2-2A7.9 7.9 0 0 0 6 12c0 4.4 3.5 8 7.8 8 2 0 3.8-.8 5.2-2" />
+    </svg>
   );
 };
 
