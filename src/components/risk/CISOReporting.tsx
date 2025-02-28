@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRiskAssessments } from "@/hooks/useRiskAssessments";
@@ -26,16 +25,16 @@ const CISOReporting = () => {
   const division = "B2B";
   const team = "Zeus";
 
-  // Metrics state
+  // Initial mock metrics with realistic values
   const [metrics, setMetrics] = useState({
-    numberOfProducts: 0,
-    globalRevenueRisks: 0,
-    localRevenueRisks: 0,
-    customRisks: 0,
-    daysSinceLastAssessment: 0,
-    risksWithoutControls: 0,
-    medianRecoveryTime: 0,
-    piRiskScore: 0
+    numberOfProducts: 12,
+    globalRevenueRisks: 3,
+    localRevenueRisks: 7,
+    customRisks: 4,
+    daysSinceLastAssessment: 14,
+    risksWithoutControls: 5,
+    medianRecoveryTime: 24,
+    piRiskScore: 78
   });
 
   useEffect(() => {
@@ -51,74 +50,78 @@ const CISOReporting = () => {
         divisionServiceIds.includes(a.serviceId)
       );
 
-      // Calculate metrics
-      const numberOfProducts = divisionServices.length;
-      
-      const globalRevenueRisks = relevantAssessments.filter(
-        a => a.hasGlobalRevenueImpact
-      ).length;
-      
-      const localRevenueRisks = relevantAssessments.filter(
-        a => a.hasLocalRevenueImpact
-      ).length;
-      
-      // For demo purposes, assume custom risks are ones with non-standard categories
-      const standardCategories = ["Error", "Failure", "Malicious"];
-      const customRisks = relevantAssessments.filter(
-        a => !standardCategories.includes(a.riskCategory)
-      ).length;
-      
-      // Calculate days since last assessment
-      const lastAssessmentDate = relevantAssessments.length > 0 
-        ? Math.max(...relevantAssessments.map(a => a.createdAt.getTime()))
-        : Date.now();
-      const daysSinceLastAssessment = Math.floor(
-        (Date.now() - lastAssessmentDate) / (1000 * 60 * 60 * 24)
-      );
-      
-      // Risks without compensating controls (empty mitigation field)
-      const risksWithoutControls = relevantAssessments.filter(
-        a => !a.mitigation || a.mitigation.trim() === ""
-      ).length;
-      
-      // Calculate median recovery time (hours to remediate)
-      const remediationTimes = relevantAssessments
-        .map(a => a.hoursToRemediate)
-        .filter(hours => hours !== undefined)
-        .sort((a, b) => (a || 0) - (b || 0));
-      
-      let medianRecoveryTime = 0;
-      if (remediationTimes.length > 0) {
-        const mid = Math.floor(remediationTimes.length / 2);
-        medianRecoveryTime = remediationTimes.length % 2 === 0
-          ? ((remediationTimes[mid - 1] || 0) + (remediationTimes[mid] || 0)) / 2
-          : (remediationTimes[mid] || 0);
-      }
-      
-      // Calculate PI risk score - higher score for more PI data at risk
-      // This is a simplified mock calculation
-      const piRiskScore = relevantAssessments.reduce((score, assessment) => {
-        if (assessment.piDataAtRisk === "yes") {
-          switch (assessment.piDataAmount) {
-            case "more_than_99m": return score + 100;
-            case "between_1m_and_99m": return score + 50;
-            case "less_than_1m": return score + 10;
-            default: return score + 5;
-          }
+      // If we have real data, calculate metrics from it
+      if (relevantAssessments.length > 0) {
+        // Calculate metrics
+        const numberOfProducts = divisionServices.length;
+        
+        const globalRevenueRisks = relevantAssessments.filter(
+          a => a.hasGlobalRevenueImpact
+        ).length;
+        
+        const localRevenueRisks = relevantAssessments.filter(
+          a => a.hasLocalRevenueImpact
+        ).length;
+        
+        // For demo purposes, assume custom risks are ones with non-standard categories
+        const standardCategories = ["Error", "Failure", "Malicious"];
+        const customRisks = relevantAssessments.filter(
+          a => !standardCategories.includes(a.riskCategory)
+        ).length;
+        
+        // Calculate days since last assessment
+        const lastAssessmentDate = relevantAssessments.length > 0 
+          ? Math.max(...relevantAssessments.map(a => a.createdAt.getTime()))
+          : Date.now();
+        const daysSinceLastAssessment = Math.floor(
+          (Date.now() - lastAssessmentDate) / (1000 * 60 * 60 * 24)
+        );
+        
+        // Risks without compensating controls (empty mitigation field)
+        const risksWithoutControls = relevantAssessments.filter(
+          a => !a.mitigation || a.mitigation.trim() === ""
+        ).length;
+        
+        // Calculate median recovery time (hours to remediate)
+        const remediationTimes = relevantAssessments
+          .map(a => a.hoursToRemediate)
+          .filter(hours => hours !== undefined)
+          .sort((a, b) => (a || 0) - (b || 0));
+        
+        let medianRecoveryTime = 0;
+        if (remediationTimes.length > 0) {
+          const mid = Math.floor(remediationTimes.length / 2);
+          medianRecoveryTime = remediationTimes.length % 2 === 0
+            ? ((remediationTimes[mid - 1] || 0) + (remediationTimes[mid] || 0)) / 2
+            : (remediationTimes[mid] || 0);
         }
-        return score;
-      }, 0);
-      
-      setMetrics({
-        numberOfProducts,
-        globalRevenueRisks,
-        localRevenueRisks,
-        customRisks,
-        daysSinceLastAssessment,
-        risksWithoutControls,
-        medianRecoveryTime,
-        piRiskScore
-      });
+        
+        // Calculate PI risk score - higher score for more PI data at risk
+        // This is a simplified mock calculation
+        const piRiskScore = relevantAssessments.reduce((score, assessment) => {
+          if (assessment.piDataAtRisk === "yes") {
+            switch (assessment.piDataAmount) {
+              case "more_than_99m": return score + 100;
+              case "between_1m_and_99m": return score + 50;
+              case "less_than_1m": return score + 10;
+              default: return score + 5;
+            }
+          }
+          return score;
+        }, 0);
+        
+        setMetrics({
+          numberOfProducts,
+          globalRevenueRisks,
+          localRevenueRisks,
+          customRisks,
+          daysSinceLastAssessment,
+          risksWithoutControls,
+          medianRecoveryTime,
+          piRiskScore
+        });
+      }
+      // Otherwise, we keep the mock metrics
     }
   }, [assessments, services, getServiceDetails]);
 
