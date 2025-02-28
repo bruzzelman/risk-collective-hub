@@ -14,6 +14,7 @@ import { Rat } from "lucide-react";
 import RiskAssessmentTable from "@/components/RiskAssessmentTable";
 import StandardRisksTable from "@/components/risk/StandardRisksTable";
 import RiskMetrics from "@/components/risk/RiskMetrics";
+import CISOReporting from "@/components/risk/CISOReporting";
 import { useRiskAssessments } from "@/hooks/useRiskAssessments";
 import { standardRisks } from "@/data/standardRisks";
 
@@ -86,6 +87,7 @@ const IndexPage = () => {
                 <TabsTrigger value="services">Services</TabsTrigger>
                 <TabsTrigger value="teams">Teams</TabsTrigger>
                 <TabsTrigger value="reporting">Reporting</TabsTrigger>
+                <TabsTrigger value="ciso-reporting">CISO Reporting</TabsTrigger>
                 <TabsTrigger value="standard-risks">Standard Risks</TabsTrigger>
               </TabsList>
 
@@ -113,6 +115,10 @@ const IndexPage = () => {
 
               <TabsContent value="reporting">
                 <RiskMetrics assessments={assessments} />
+              </TabsContent>
+
+              <TabsContent value="ciso-reporting">
+                <CISOReporting />
               </TabsContent>
 
               <TabsContent value="standard-risks">
