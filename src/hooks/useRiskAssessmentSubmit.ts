@@ -45,6 +45,7 @@ export const useRiskAssessmentSubmit = (
           pi_data_amount: values.piDataAmount,
           hours_to_remediate: values.hoursToRemediate,
           additional_loss_event_costs: values.additionalLossEventCosts,
+          mitigative_controls_implemented: values.mitigativeControlsImplemented,
           created_by: user.id
         });
 

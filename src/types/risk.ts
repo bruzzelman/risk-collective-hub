@@ -1,3 +1,4 @@
+
 export type RiskLevel = "low" | "medium" | "high" | "critical";
 
 export type RevenueImpact = "yes" | "no" | "unclear";
@@ -5,6 +6,8 @@ export type RevenueImpact = "yes" | "no" | "unclear";
 export type PIDataAtRisk = "yes" | "no";
 
 export type PIDataAmount = "less_than_1m" | "between_1m_and_99m" | "more_than_99m" | "unknown";
+
+export type MitigativeControls = "yes" | "no" | "";
 
 export type Team = {
   id: string;
@@ -57,6 +60,7 @@ export type RiskAssessment = {
   additionalLossEventCosts?: number;
   piDataAtRisk: PIDataAtRisk;
   piDataAmount?: PIDataAmount;
+  mitigativeControlsImplemented: MitigativeControls;
 };
 
 export const RISK_CATEGORIES = [

@@ -26,7 +26,13 @@ export const RevenueImpactSection = ({ form }: RevenueImpactSectionProps) => {
     name: "revenueImpact",
   });
 
+  const mitigativeControlsImplemented = useWatch({
+    control: form.control,
+    name: "mitigativeControlsImplemented",
+  });
+
   const showRevenueImpactOptions = revenueImpact === "yes";
+  const showMitigationField = mitigativeControlsImplemented === "yes";
 
   return (
     <>
@@ -94,14 +100,27 @@ export const RevenueImpactSection = ({ form }: RevenueImpactSectionProps) => {
         </div>
       )}
 
-      <TextField
+      <SelectField
         form={form}
-        name="mitigation"
-        label="Current compensating control"
-        type="textarea"
-        required
+        name="mitigativeControlsImplemented"
+        label="Mitigative control(s) are implemented"
+        placeholder="Please select"
+        options={[
+          { value: "", label: "Please select" },
+          { value: "yes", label: "Yes" },
+          { value: "no", label: "No" },
+        ]}
       />
+
+      {showMitigationField && (
+        <TextField
+          form={form}
+          name="mitigation"
+          label="Current compensating control"
+          type="textarea"
+          required={false}
+        />
+      )}
     </>
   );
 };
-

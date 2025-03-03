@@ -54,6 +54,7 @@ const RiskAssessmentEditDialog = ({
               piDataAmount: assessment.piDataAmount,
               hoursToRemediate: assessment.hoursToRemediate,
               additionalLossEventCosts: assessment.additionalLossEventCosts,
+              mitigativeControlsImplemented: assessment.mitigativeControlsImplemented || "",
             }}
           />
         </div>
