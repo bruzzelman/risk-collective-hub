@@ -13,6 +13,11 @@ interface BasicInfoSectionProps {
 
 export const BasicInfoSection = ({ form, services }: BasicInfoSectionProps) => {
   const { user } = useAuth();
+  
+  // Set the riskOwner value programmatically without showing the field
+  if (user?.email && !form.getValues().riskOwner) {
+    form.setValue('riskOwner', user.email);
+  }
 
   return (
     <>
@@ -43,14 +48,6 @@ export const BasicInfoSection = ({ form, services }: BasicInfoSectionProps) => {
         name="riskDescription"
         label="Risk Description"
         type="textarea"
-        required
-      />
-
-      <TextField
-        form={form}
-        name="riskOwner"
-        label="Risk Owner"
-        value={user?.email || ''}
         required
       />
 

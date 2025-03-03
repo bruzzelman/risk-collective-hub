@@ -1,3 +1,4 @@
+
 import {
   Table,
   TableBody,
@@ -57,7 +58,7 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
         risk_level: data.riskLevel || 'low',
         mitigation: data.mitigation || '',
         data_classification: data.dataClassification || 'Internal',
-        risk_owner: data.riskOwner,
+        risk_owner: data.riskOwner, // Keep this to maintain database integrity
         revenue_impact: data.revenueImpact || 'unclear',
         has_global_revenue_impact: data.hasGlobalRevenueImpact || false,
         global_revenue_impact_hours: data.globalRevenueImpactHours,
@@ -168,7 +169,6 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
                   <TableHead>Loss event category</TableHead>
                   <TableHead>Data Interface</TableHead>
                   <TableHead>Likelihood (%/year)</TableHead>
-                  <TableHead>Risk Owner</TableHead>
                   <TableHead>Date Added</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>

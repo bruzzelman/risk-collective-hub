@@ -27,7 +27,7 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
       revenueImpact: "unclear",
       likelihoodPerYear: 1,
       piDataAtRisk: "no" as const,
-      riskOwner: user?.email || '',
+      riskOwner: user?.email || '', // Keep this field in the form data but don't display it
       dataInterface: "Not applicable",
       dataLocation: "Not applicable", // Keep this to satisfy the type
       mitigativeControlsImplemented: "" as const,
