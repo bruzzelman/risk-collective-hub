@@ -1,6 +1,6 @@
 
 import { UseFormReturn } from "react-hook-form";
-import { RiskAssessment, DATA_INTERFACES, DATA_LOCATIONS, RISK_CATEGORIES } from "@/types/risk";
+import { RiskAssessment, DATA_INTERFACES, RISK_CATEGORIES } from "@/types/risk";
 import { SelectField } from "./SelectField";
 import { TextField } from "./TextField";
 import { Service } from "@/types/risk";
@@ -62,17 +62,6 @@ export const BasicInfoSection = ({ form, services }: BasicInfoSectionProps) => {
         options={DATA_INTERFACES.map((interface_) => ({
           value: interface_,
           label: interface_,
-        }))}
-      />
-
-      <SelectField
-        form={form}
-        name="dataLocation"
-        label="Data Location"
-        placeholder="Select data location"
-        options={DATA_LOCATIONS.map((location) => ({
-          value: location,
-          label: location,
         }))}
       />
     </>

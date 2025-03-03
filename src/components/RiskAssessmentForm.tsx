@@ -29,7 +29,6 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
       piDataAtRisk: "no" as const,
       riskOwner: user?.email || '',
       dataInterface: "Not applicable",
-      dataLocation: "Not applicable",
       mitigativeControlsImplemented: "" as const,
       ...(initialValues || {}), // Make sure initialValues override defaults
     },

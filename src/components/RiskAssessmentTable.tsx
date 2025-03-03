@@ -1,4 +1,3 @@
-
 import {
   Table,
   TableBody,
@@ -53,7 +52,6 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
         risk_category: data.riskCategory,
         risk_description: data.riskDescription,
         data_interface: data.dataInterface || 'Not applicable',
-        data_location: data.dataLocation || 'Not applicable',
         likelihood_per_year: data.likelihoodPerYear || 1,
         risk_level: data.riskLevel || 'low',
         mitigation: data.mitigation || '',
@@ -167,7 +165,6 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
                   <TableHead>Loss event description</TableHead>
                   <TableHead>Loss event category</TableHead>
                   <TableHead>Data Interface</TableHead>
-                  <TableHead>Data Location</TableHead>
                   <TableHead>Likelihood (%/year)</TableHead>
                   <TableHead>Risk Owner</TableHead>
                   <TableHead>Date Added</TableHead>
@@ -204,4 +201,3 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
 };
 
 export default RiskAssessmentTable;
-

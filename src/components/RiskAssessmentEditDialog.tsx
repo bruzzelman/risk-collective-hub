@@ -40,7 +40,6 @@ const RiskAssessmentEditDialog = ({
               riskDescription: assessment.riskDescription,
               riskOwner: assessment.riskOwner,
               dataInterface: assessment.dataInterface,
-              dataLocation: assessment.dataLocation,
               likelihoodPerYear: assessment.likelihoodPerYear,
               riskLevel: assessment.riskLevel,
               mitigation: assessment.mitigation,
