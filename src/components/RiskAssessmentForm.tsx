@@ -9,6 +9,7 @@ import { BasicInfoSection } from "./forms/BasicInfoSection";
 import { RiskDetailsSection } from "./forms/RiskDetailsSection";
 import { RevenueImpactSection } from "./forms/RevenueImpactSection";
 import { useAuth } from "@/components/AuthProvider";
+import { useEffect } from "react";
 
 interface RiskAssessmentFormProps {
   onSubmit: (data: Omit<RiskAssessment, "id" | "createdAt">) => void;
@@ -34,6 +35,13 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
       ...(initialValues || {}), // Make sure initialValues override defaults
     },
   });
+  
+  // Ensure riskOwner is always set to current user's email
+  useEffect(() => {
+    if (user?.email) {
+      form.setValue('riskOwner', user.email);
+    }
+  }, [user, form]);
   
   const { data: services = [] } = useServices();
   const handleSubmit = initialValues ? onSubmit : useRiskAssessmentSubmit(form, onSubmit);

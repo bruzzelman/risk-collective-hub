@@ -21,6 +21,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useServiceDetails } from "@/hooks/useServiceDetails";
 import RiskAssessmentTableRow from "./RiskAssessmentTableRow";
 import RiskAssessmentEditDialog from "./RiskAssessmentEditDialog";
+import { useAuth } from "@/components/AuthProvider";
 
 interface RiskAssessmentTableProps {
   assessments: RiskAssessment[];
@@ -32,6 +33,7 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { getServiceDetails } = useServiceDetails();
+  const { user } = useAuth();
 
   const handleEdit = (assessment: RiskAssessment) => {
     console.log('Editing assessment:', assessment);
@@ -41,6 +43,16 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
   const handleEditSubmit = async (data: Omit<RiskAssessment, "id" | "createdAt">) => {
     if (!editingAssessment) {
       console.error('No editing assessment found');
+      return;
+    }
+
+    if (!user?.email) {
+      console.error('User email not found');
+      toast({
+        title: "Error",
+        description: "User information not available",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -58,7 +70,7 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
         risk_level: data.riskLevel || 'low',
         mitigation: data.mitigation || '',
         data_classification: data.dataClassification || 'Internal',
-        risk_owner: data.riskOwner, // Keep this to maintain database integrity
+        risk_owner: user.email, // Always use current user's email
         revenue_impact: data.revenueImpact || 'unclear',
         has_global_revenue_impact: data.hasGlobalRevenueImpact || false,
         global_revenue_impact_hours: data.globalRevenueImpactHours,

@@ -22,30 +22,36 @@ export const useRiskAssessmentSubmit = (
       return;
     }
 
+    // Ensure risk owner is set to the current user's email
+    const dataToSubmit = {
+      ...values,
+      riskOwner: user.email || values.riskOwner
+    };
+
     try {
       const { error } = await supabase
         .from('risk_assessments')
         .insert({
-          service_id: values.serviceId,
-          risk_category: values.riskCategory,
-          risk_description: values.riskDescription,
-          data_interface: values.dataInterface,
-          data_location: values.dataLocation,
-          likelihood_per_year: values.likelihoodPerYear,
-          risk_level: values.riskLevel,
-          mitigation: values.mitigation || '',
-          data_classification: values.dataClassification,
-          risk_owner: values.riskOwner,
-          revenue_impact: values.revenueImpact,
-          has_global_revenue_impact: values.hasGlobalRevenueImpact,
-          global_revenue_impact_hours: values.globalRevenueImpactHours,
-          has_local_revenue_impact: values.hasLocalRevenueImpact,
-          local_revenue_impact_hours: values.localRevenueImpactHours,
-          pi_data_at_risk: values.piDataAtRisk,
-          pi_data_amount: values.piDataAmount,
-          hours_to_remediate: values.hoursToRemediate,
-          additional_loss_event_costs: values.additionalLossEventCosts,
-          mitigative_controls_implemented: values.mitigativeControlsImplemented,
+          service_id: dataToSubmit.serviceId,
+          risk_category: dataToSubmit.riskCategory,
+          risk_description: dataToSubmit.riskDescription,
+          data_interface: dataToSubmit.dataInterface,
+          data_location: dataToSubmit.dataLocation,
+          likelihood_per_year: dataToSubmit.likelihoodPerYear,
+          risk_level: dataToSubmit.riskLevel,
+          mitigation: dataToSubmit.mitigation || '',
+          data_classification: dataToSubmit.dataClassification,
+          risk_owner: dataToSubmit.riskOwner,
+          revenue_impact: dataToSubmit.revenueImpact,
+          has_global_revenue_impact: dataToSubmit.hasGlobalRevenueImpact,
+          global_revenue_impact_hours: dataToSubmit.globalRevenueImpactHours,
+          has_local_revenue_impact: dataToSubmit.hasLocalRevenueImpact,
+          local_revenue_impact_hours: dataToSubmit.localRevenueImpactHours,
+          pi_data_at_risk: dataToSubmit.piDataAtRisk,
+          pi_data_amount: dataToSubmit.piDataAmount,
+          hours_to_remediate: dataToSubmit.hoursToRemediate,
+          additional_loss_event_costs: dataToSubmit.additionalLossEventCosts,
+          mitigative_controls_implemented: dataToSubmit.mitigativeControlsImplemented,
           created_by: user.id
         });
 
@@ -54,7 +60,7 @@ export const useRiskAssessmentSubmit = (
         throw error;
       }
 
-      onSubmit(values);
+      onSubmit(dataToSubmit);
       form.reset();
       
       toast({

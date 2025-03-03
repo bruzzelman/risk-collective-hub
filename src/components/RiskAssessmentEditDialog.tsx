@@ -8,6 +8,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import RiskAssessmentForm from "./RiskAssessmentForm";
+import { useAuth } from "@/components/AuthProvider";
 
 interface RiskAssessmentEditDialogProps {
   assessment: RiskAssessment | null;
@@ -20,6 +21,8 @@ const RiskAssessmentEditDialog = ({
   onClose,
   onSubmit,
 }: RiskAssessmentEditDialogProps) => {
+  const { user } = useAuth();
+  
   if (!assessment) return null;
 
   return (
@@ -38,7 +41,7 @@ const RiskAssessmentEditDialog = ({
               serviceId: assessment.serviceId,
               riskCategory: assessment.riskCategory,
               riskDescription: assessment.riskDescription,
-              riskOwner: assessment.riskOwner,
+              riskOwner: user?.email || assessment.riskOwner, // Use current user's email or fall back to the original
               dataInterface: assessment.dataInterface,
               dataLocation: assessment.dataLocation, // Keep this to satisfy the type
               likelihoodPerYear: assessment.likelihoodPerYear,

@@ -4,7 +4,6 @@ import { RiskAssessment, DATA_INTERFACES, RISK_CATEGORIES } from "@/types/risk";
 import { SelectField } from "./SelectField";
 import { TextField } from "./TextField";
 import { Service } from "@/types/risk";
-import { useAuth } from "@/components/AuthProvider";
 
 interface BasicInfoSectionProps {
   form: UseFormReturn<Omit<RiskAssessment, "id" | "createdAt">>;
@@ -12,13 +11,6 @@ interface BasicInfoSectionProps {
 }
 
 export const BasicInfoSection = ({ form, services }: BasicInfoSectionProps) => {
-  const { user } = useAuth();
-  
-  // Set the riskOwner value programmatically without showing the field
-  if (user?.email && !form.getValues().riskOwner) {
-    form.setValue('riskOwner', user.email);
-  }
-
   return (
     <>
       <SelectField
