@@ -26,6 +26,9 @@ export const useRiskAssessments = (userId: string | undefined) => {
         // Log the assessment to see what properties are available
         console.log('Assessment raw data:', assessment);
         
+        // Get all the keys from the assessment object to debug
+        console.log('Assessment keys:', Object.keys(assessment));
+        
         return {
           id: assessment.id,
           serviceId: assessment.service_id,
@@ -49,9 +52,9 @@ export const useRiskAssessments = (userId: string | undefined) => {
           additionalLossEventCosts: assessment.additional_loss_event_costs,
           piDataAtRisk: assessment.pi_data_at_risk as PIDataAtRisk || "no",
           piDataAmount: assessment.pi_data_amount as PIDataAmount,
-          // Check if the column exists in the database result
-          mitigativeControlsImplemented: assessment.mitigative_controls_implemented 
-            ? (assessment.mitigative_controls_implemented as MitigativeControls) 
+          // Use a type assertion with 'as any' first to safely check if the property exists
+          mitigativeControlsImplemented: Object.prototype.hasOwnProperty.call(assessment as any, 'mitigative_controls_implemented')
+            ? ((assessment as any).mitigative_controls_implemented as MitigativeControls)
             : "" as MitigativeControls,
         };
       });
