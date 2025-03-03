@@ -1,7 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { RiskAssessment, RevenueImpact, PIDataAtRisk, PIDataAmount } from "@/types/risk";
+import { RiskAssessment, RevenueImpact, PIDataAtRisk, PIDataAmount, MitigativeControls } from "@/types/risk";
 
 export const useRiskAssessments = (userId: string | undefined) => {
   return useQuery({
@@ -45,6 +45,7 @@ export const useRiskAssessments = (userId: string | undefined) => {
         additionalLossEventCosts: assessment.additional_loss_event_costs,
         piDataAtRisk: assessment.pi_data_at_risk as PIDataAtRisk || "no",
         piDataAmount: assessment.pi_data_amount as PIDataAmount,
+        mitigativeControlsImplemented: (assessment.mitigative_controls_implemented as MitigativeControls) || "",
       }));
     },
     retry: false // Don't retry on failure so we can see errors
