@@ -52,6 +52,7 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
         risk_category: data.riskCategory,
         risk_description: data.riskDescription,
         data_interface: data.dataInterface || 'Not applicable',
+        data_location: data.dataLocation || 'Not applicable', // Keep this to satisfy the database schema
         likelihood_per_year: data.likelihoodPerYear || 1,
         risk_level: data.riskLevel || 'low',
         mitigation: data.mitigation || '',
@@ -65,7 +66,8 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
         pi_data_at_risk: data.piDataAtRisk || 'no',
         pi_data_amount: data.piDataAmount,
         hours_to_remediate: data.hoursToRemediate,
-        additional_loss_event_costs: data.additionalLossEventCosts
+        additional_loss_event_costs: data.additionalLossEventCosts,
+        mitigative_controls_implemented: data.mitigativeControlsImplemented || ''
       };
 
       console.log('Sending update with data:', updateData);
