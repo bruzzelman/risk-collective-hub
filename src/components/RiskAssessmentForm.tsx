@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { RiskAssessment } from "@/types/risk";
-import { useServices } from "@/hooks/useServices";
+import { useProducts } from "@/hooks/useServices";
 import { useRiskAssessmentSubmit } from "@/hooks/useRiskAssessmentSubmit";
 import { BasicInfoSection } from "./forms/BasicInfoSection";
 import { RiskDetailsSection } from "./forms/RiskDetailsSection";
@@ -43,7 +43,7 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
     }
   }, [user, form]);
   
-  const { data: services = [] } = useServices();
+  const { data: services = [] } = useProducts();
   const handleSubmit = initialValues ? onSubmit : useRiskAssessmentSubmit(form, onSubmit);
 
   return (

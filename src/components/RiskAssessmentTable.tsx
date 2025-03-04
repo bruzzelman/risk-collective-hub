@@ -18,7 +18,7 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { useServiceDetails } from "@/hooks/useServiceDetails";
+import { useProductDetails } from "@/hooks/useServiceDetails";
 import RiskAssessmentTableRow from "./RiskAssessmentTableRow";
 import RiskAssessmentEditDialog from "./RiskAssessmentEditDialog";
 import { useAuth } from "@/components/AuthProvider";
@@ -32,7 +32,7 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
   const [editingAssessment, setEditingAssessment] = useState<RiskAssessment | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { getServiceDetails } = useServiceDetails();
+  const { getProductDetails } = useProductDetails();
   const { user } = useAuth();
 
   const handleEdit = (assessment: RiskAssessment) => {
@@ -128,14 +128,14 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
   };
 
   const filteredAssessments = assessments.filter((assessment) => {
-    const serviceDetails = getServiceDetails(assessment.serviceId);
+    const productDetails = getProductDetails(assessment.serviceId);
     return (
       Object.values(assessment).some((value) =>
         value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
       ) ||
-      serviceDetails.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      serviceDetails.division.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      serviceDetails.team.toLowerCase().includes(searchTerm.toLowerCase())
+      productDetails.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      productDetails.division.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      productDetails.team.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
 
@@ -148,7 +148,7 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-gray-500">
-            No risk assessments found. Please add a service and create a risk assessment.
+            No risk assessments found. Please add a product and create a risk assessment.
           </div>
         </CardContent>
       </Card>
@@ -174,7 +174,7 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Service Name</TableHead>
+                  <TableHead>Product Name</TableHead>
                   <TableHead>Division</TableHead>
                   <TableHead>Team</TableHead>
                   <TableHead>Loss event description</TableHead>
@@ -187,14 +187,14 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
               </TableHeader>
               <TableBody>
                 {filteredAssessments.map((assessment) => {
-                  const serviceDetails = getServiceDetails(assessment.serviceId);
+                  const productDetails = getProductDetails(assessment.serviceId);
                   return (
                     <RiskAssessmentTableRow
                       key={assessment.id}
                       assessment={assessment}
-                      serviceName={serviceDetails.name}
-                      divisionName={serviceDetails.division}
-                      teamName={serviceDetails.team}
+                      serviceName={productDetails.name}
+                      divisionName={productDetails.division}
+                      teamName={productDetails.team}
                       onEdit={handleEdit}
                     />
                   );

@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRiskAssessments } from "@/hooks/useRiskAssessments";
-import { useServices } from "@/hooks/useServices";
-import { useServiceDetails } from "@/hooks/useServiceDetails";
+import { useProducts } from "@/hooks/useServices";
+import { useProductDetails } from "@/hooks/useServiceDetails";
 import { useAuth } from "@/components/AuthProvider";
 import { 
   AlertCircle, 
@@ -20,8 +20,8 @@ import {
 const CISOReporting = () => {
   const { user } = useAuth();
   const { data: assessments = [] } = useRiskAssessments(user?.id);
-  const { data: services = [] } = useServices();
-  const { getServiceDetails } = useServiceDetails();
+  const { data: products = [] } = useProducts();
+  const { getProductDetails } = useProductDetails();
 
   // Mock data for B2B Division and Zeus Team
   const division = "B2B";
@@ -42,22 +42,22 @@ const CISOReporting = () => {
   });
 
   useEffect(() => {
-    if (assessments.length > 0 && services.length > 0) {
+    if (assessments.length > 0 && products.length > 0) {
       // Filter assessments for B2B division and Zeus team
-      const divisionServices = services.filter(service => {
-        const details = getServiceDetails(service.id);
+      const divisionProducts = products.filter(product => {
+        const details = getProductDetails(product.id);
         return details.division === division && details.team === team;
       });
 
-      const divisionServiceIds = divisionServices.map(s => s.id);
+      const divisionProductIds = divisionProducts.map(p => p.id);
       const relevantAssessments = assessments.filter(a => 
-        divisionServiceIds.includes(a.serviceId)
+        divisionProductIds.includes(a.serviceId)
       );
 
       // If we have real data, calculate metrics from it
       if (relevantAssessments.length > 0) {
         // Calculate metrics
-        const numberOfProducts = divisionServices.length;
+        const numberOfProducts = divisionProducts.length;
         
         const globalRevenueRisks = relevantAssessments.filter(
           a => a.hasGlobalRevenueImpact
@@ -129,7 +129,7 @@ const CISOReporting = () => {
       }
       // Otherwise, we keep the mock metrics
     }
-  }, [assessments, services, getServiceDetails]);
+  }, [assessments, products, getProductDetails]);
 
   console.log("CISO Report Metrics:", metrics);
 

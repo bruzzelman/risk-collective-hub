@@ -9,7 +9,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import TeamsManagement from "./pages/TeamsManagement";
-import ServicesManagement from "./pages/ServicesManagement";
+import ProductsManagement from "./pages/ServicesManagement";
 
 const queryClient = new QueryClient();
 
@@ -42,7 +42,15 @@ const App = () => (
               path="/services"
               element={
                 <ProtectedRoute>
-                  <ServicesManagement />
+                  <ProductsManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/products"
+              element={
+                <ProtectedRoute>
+                  <ProductsManagement />
                 </ProtectedRoute>
               }
             />

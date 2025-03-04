@@ -16,8 +16,8 @@ export const BasicInfoSection = ({ form, services }: BasicInfoSectionProps) => {
       <SelectField
         form={form}
         name="serviceId"
-        label="Service"
-        placeholder="Select a service"
+        label="Product"
+        placeholder="Select a product"
         options={services.map((service) => ({
           value: service.id,
           label: service.name,

@@ -2,19 +2,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-export const useServiceDetails = () => {
+export const useProductDetails = () => {
   const { data: services = [], error: servicesError } = useQuery({
     queryKey: ['services'],
     queryFn: async () => {
-      console.log('Fetching services for details...');
+      console.log('Fetching products for details...');
       const { data, error } = await supabase
         .from('services')
         .select('*');
       if (error) {
-        console.error('Error fetching services:', error);
+        console.error('Error fetching products:', error);
         throw error;
       }
-      console.log('Services data:', data);
+      console.log('Products data:', data);
       return data;
     },
     retry: false
@@ -54,32 +54,35 @@ export const useServiceDetails = () => {
     retry: false
   });
 
-  if (servicesError) console.error('Services error:', servicesError);
+  if (servicesError) console.error('Products error:', servicesError);
   if (divisionsError) console.error('Divisions error:', divisionsError);
   if (teamsError) console.error('Teams error:', teamsError);
 
-  const getServiceDetails = (serviceId: string) => {
-    const service = services.find(s => s.id === serviceId);
-    if (!service) {
-      console.log('Service not found:', serviceId);
-      return { name: "Unknown Service", division: "Unknown Division", team: "Unknown Team" };
+  const getProductDetails = (productId: string) => {
+    const product = services.find(s => s.id === productId);
+    if (!product) {
+      console.log('Product not found:', productId);
+      return { name: "Unknown Product", division: "Unknown Division", team: "Unknown Team" };
     }
 
-    const division = divisions.find(d => d.id === service.division_id);
-    const team = teams.find(t => t.id === service.team_id);
+    const division = divisions.find(d => d.id === product.division_id);
+    const team = teams.find(t => t.id === product.team_id);
 
-    console.log('Service details:', {
-      name: service.name,
+    console.log('Product details:', {
+      name: product.name,
       division: division?.name || "Unknown Division",
       team: team?.name || "Unknown Team"
     });
 
     return {
-      name: service.name,
+      name: product.name,
       division: division?.name || "Unknown Division",
       team: team?.name || "Unknown Team"
     };
   };
 
-  return { getServiceDetails };
+  return { getProductDetails };
 };
+
+// For backward compatibility
+export const useServiceDetails = useProductDetails;

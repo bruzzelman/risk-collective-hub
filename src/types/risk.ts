@@ -37,6 +37,9 @@ export type Service = {
   createdBy: string;
 };
 
+// Alias Service as Product for UI display purposes
+export type Product = Service;
+
 export type RiskAssessment = {
   id: string;
   serviceId: string;
