@@ -14,8 +14,10 @@ import {
   Shield, 
   ShieldAlert, 
   Hourglass,
-  EuroIcon
+  EuroIcon,
+  DollarSign
 } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 
 const CISOReporting = () => {
   const { user } = useAuth();
@@ -40,6 +42,17 @@ const CISOReporting = () => {
     estimatedGlobalRevenueRisk: "900k €",
     estimatedLocalRevenueRisk: "400k €"
   });
+
+  // Financial loss by cost type mock data
+  const [financialLossByType, setFinancialLossByType] = useState([
+    { name: 'GDPR Fines', amount: 450000, color: '#FF6B6B' },
+    { name: 'LGPD Fines', amount: 120000, color: '#FF9E5E' },
+    { name: 'CCPA Penalties', amount: 95000, color: '#FFD166' },
+    { name: 'Settlements', amount: 350000, color: '#4ECDC4' },
+    { name: 'Remediation', amount: 280000, color: '#1A535C' },
+    { name: 'Legal Fees', amount: 175000, color: '#7B68EE' },
+    { name: 'Other', amount: 80000, color: '#9EB0C9' }
+  ]);
 
   useEffect(() => {
     if (assessments.length > 0 && products.length > 0) {
@@ -131,6 +144,15 @@ const CISOReporting = () => {
     }
   }, [assessments, products, getProductDetails]);
 
+  // Format number with Euro symbol
+  const formatEuro = (value: number) => {
+    return new Intl.NumberFormat('de-DE', {
+      style: 'currency',
+      currency: 'EUR',
+      maximumFractionDigits: 0
+    }).format(value);
+  };
+
   console.log("CISO Report Metrics:", metrics);
 
   return (
@@ -211,6 +233,50 @@ const CISOReporting = () => {
           description="Personal information risk exposure" 
         />
       </div>
+
+      {/* New Financial Loss by Cost Type Widget */}
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="text-lg">Financial Loss by Cost Type</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={financialLossByType}
+                margin={{ top: 5, right: 30, left: 20, bottom: 60 }}
+              >
+                <XAxis 
+                  dataKey="name" 
+                  angle={-45} 
+                  textAnchor="end" 
+                  height={70} 
+                  tick={{ fontSize: 12 }}
+                />
+                <YAxis 
+                  tickFormatter={(value) => `€${value / 1000}k`} 
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip 
+                  formatter={(value) => [formatEuro(value as number), "Amount"]}
+                  labelStyle={{ fontWeight: "bold" }}
+                />
+                <Legend verticalAlign="top" height={36} />
+                <Bar dataKey="amount" name="Amount (€)">
+                  {financialLossByType.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="mt-4 text-sm text-muted-foreground">
+            <p>
+              <span className="font-medium">Total potential financial loss:</span> {formatEuro(financialLossByType.reduce((sum, item) => sum + item.amount, 0))}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-md">
         <p className="text-amber-800 text-sm font-medium">
