@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRiskAssessments } from "@/hooks/useRiskAssessments";
@@ -15,9 +14,15 @@ import {
   ShieldAlert, 
   Hourglass,
   EuroIcon,
-  DollarSign
+  DollarSign,
+  Plugin,
+  FileWarning,
+  Network,
+  ServerCrash,
+  LifeBuoy
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
+import { PieChart, Pie, Cell as PieCell, Tooltip as PieTooltip } from 'recharts';
 
 const CISOReporting = () => {
   const { user } = useAuth();
@@ -52,6 +57,42 @@ const CISOReporting = () => {
     { name: 'Remediation', amount: 280000, color: '#1A535C' },
     { name: 'Legal Fees', amount: 175000, color: '#7B68EE' },
     { name: 'Other', amount: 80000, color: '#9EB0C9' }
+  ]);
+
+  // Engineering risks mock data
+  const [engineeringRisks, setEngineeringRisks] = useState({
+    // Systems with critical patches missing
+    criticalPatchesMissing: 12,
+    // Systems with high CVSS score vulnerabilities
+    highCvssVulnerabilities: 18,
+    // Percentage of EOL systems
+    eolSystemsPercentage: 23,
+    // Systems without valid support contracts
+    unsupportedSystems: 8,
+    // Average age of security vulnerabilities in days
+    averageVulnerabilityAge: 47,
+    // Number of components with dependency vulnerabilities
+    dependencyVulnerabilities: 34,
+    // Number of unmanaged devices on network
+    unmanagedDevices: 7
+  });
+
+  // CVSS score distribution
+  const [cvssSeverity, setCvssSeverity] = useState([
+    { name: 'Critical (9.0-10.0)', value: 6, color: '#D32F2F' },
+    { name: 'High (7.0-8.9)', value: 12, color: '#FF5722' },
+    { name: 'Medium (4.0-6.9)', value: 23, color: '#FFC107' },
+    { name: 'Low (0.1-3.9)', value: 15, color: '#4CAF50' },
+    { name: 'None (0.0)', value: 9, color: '#2196F3' }
+  ]);
+
+  // EOL systems by category
+  const [eolSystems, setEolSystems] = useState([
+    { name: 'Operating Systems', count: 5, color: '#9C27B0' },
+    { name: 'Databases', count: 3, color: '#673AB7' },
+    { name: 'Application Servers', count: 7, color: '#3F51B5' },
+    { name: 'Network Equipment', count: 4, color: '#00BCD4' },
+    { name: 'Container Images', count: 9, color: '#009688' }
   ]);
 
   useEffect(() => {
@@ -234,7 +275,7 @@ const CISOReporting = () => {
         />
       </div>
 
-      {/* New Financial Loss by Cost Type Widget */}
+      {/* Financial Loss by Cost Type Widget */}
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-lg">Financial Loss by Cost Type</CardTitle>
@@ -277,6 +318,135 @@ const CISOReporting = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* New Engineering Risks Widget */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* CVSS Severity Distribution */}
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center">
+              <FileWarning className="h-5 w-5 text-red-500 mr-2" />
+              CVSS Vulnerability Distribution
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={cvssSeverity}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {cvssSeverity.map((entry, index) => (
+                      <PieCell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <PieTooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="mt-2 text-sm text-muted-foreground">
+              <p>
+                <span className="font-medium">Total vulnerabilities:</span> {cvssSeverity.reduce((sum, item) => sum + item.value, 0)}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* EOL Systems by Category */}
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center">
+              <ServerCrash className="h-5 w-5 text-orange-500 mr-2" />
+              End-of-Life Systems by Category
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={eolSystems}
+                  layout="vertical"
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <XAxis type="number" />
+                  <YAxis dataKey="name" type="category" width={150} />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="count" name="Number of Systems">
+                    {eolSystems.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="mt-2 text-sm text-muted-foreground">
+              <p>
+                <span className="font-medium">Total EOL systems:</span> {eolSystems.reduce((sum, item) => sum + item.count, 0)}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Engineering Risk Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricCard 
+          title="Critical Patches Missing" 
+          value={engineeringRisks.criticalPatchesMissing} 
+          icon={<Plugin className="h-5 w-5 text-red-500" />} 
+          description="Systems with critical security patches missing" 
+        />
+        
+        <MetricCard 
+          title="High CVSS Vulnerabilities" 
+          value={engineeringRisks.highCvssVulnerabilities} 
+          icon={<FileWarning className="h-5 w-5 text-orange-500" />} 
+          description="Systems with CVSS score > 7.0" 
+        />
+        
+        <MetricCard 
+          title="EOL Systems" 
+          value={`${engineeringRisks.eolSystemsPercentage}%`} 
+          icon={<ServerCrash className="h-5 w-5 text-amber-500" />} 
+          description="Percentage of systems past end-of-life" 
+        />
+        
+        <MetricCard 
+          title="Unsupported Systems" 
+          value={engineeringRisks.unsupportedSystems} 
+          icon={<LifeBuoy className="h-5 w-5 text-purple-500" />} 
+          description="Systems without valid support contracts" 
+        />
+        
+        <MetricCard 
+          title="Avg. Vulnerability Age" 
+          value={`${engineeringRisks.averageVulnerabilityAge} days`} 
+          icon={<Clock className="h-5 w-5 text-blue-500" />} 
+          description="Average age of open vulnerabilities" 
+        />
+        
+        <MetricCard 
+          title="Dependency Vulnerabilities" 
+          value={engineeringRisks.dependencyVulnerabilities} 
+          icon={<AlertCircle className="h-5 w-5 text-indigo-500" />} 
+          description="Components with dependency issues" 
+        />
+        
+        <MetricCard 
+          title="Unmanaged Devices" 
+          value={engineeringRisks.unmanagedDevices} 
+          icon={<Network className="h-5 w-5 text-emerald-500" />} 
+          description="Devices without management agents" 
+        />
+      </div>
 
       <div className="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-md">
         <p className="text-amber-800 text-sm font-medium">
