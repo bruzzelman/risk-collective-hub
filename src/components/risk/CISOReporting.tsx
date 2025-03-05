@@ -13,16 +13,18 @@ import {
   Shield, 
   ShieldAlert, 
   Hourglass,
-  EuroIcon,
   DollarSign,
-  Plugin,
   FileWarning,
   Network,
   ServerCrash,
   LifeBuoy
 } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
-import { PieChart, Pie, Cell as PieCell, Tooltip as PieTooltip } from 'recharts';
+import { MetricCard } from "./MetricCard";
+import { FinancialLossWidget } from "./FinancialLossWidget";
+import { VulnerabilityDistributionWidget } from "./VulnerabilityDistributionWidget";
+import { EOLSystemsWidget } from "./EOLSystemsWidget";
+import { EngineeringRiskMetrics } from "./EngineeringRiskMetrics";
+import { Euro } from "../icons/Euro";
 
 const CISOReporting = () => {
   const { user } = useAuth();
@@ -185,15 +187,6 @@ const CISOReporting = () => {
     }
   }, [assessments, products, getProductDetails]);
 
-  // Format number with Euro symbol
-  const formatEuro = (value: number) => {
-    return new Intl.NumberFormat('de-DE', {
-      style: 'currency',
-      currency: 'EUR',
-      maximumFractionDigits: 0
-    }).format(value);
-  };
-
   console.log("CISO Report Metrics:", metrics);
 
   return (
@@ -276,177 +269,16 @@ const CISOReporting = () => {
       </div>
 
       {/* Financial Loss by Cost Type Widget */}
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="text-lg">Financial Loss by Cost Type</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={financialLossByType}
-                margin={{ top: 5, right: 30, left: 20, bottom: 60 }}
-              >
-                <XAxis 
-                  dataKey="name" 
-                  angle={-45} 
-                  textAnchor="end" 
-                  height={70} 
-                  tick={{ fontSize: 12 }}
-                />
-                <YAxis 
-                  tickFormatter={(value) => `€${value / 1000}k`} 
-                  tick={{ fontSize: 12 }}
-                />
-                <Tooltip 
-                  formatter={(value) => [formatEuro(value as number), "Amount"]}
-                  labelStyle={{ fontWeight: "bold" }}
-                />
-                <Legend verticalAlign="top" height={36} />
-                <Bar dataKey="amount" name="Amount (€)">
-                  {financialLossByType.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="mt-4 text-sm text-muted-foreground">
-            <p>
-              <span className="font-medium">Total potential financial loss:</span> {formatEuro(financialLossByType.reduce((sum, item) => sum + item.amount, 0))}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <FinancialLossWidget financialLossByType={financialLossByType} />
 
-      {/* New Engineering Risks Widget */}
+      {/* Engineering Risk Widgets */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* CVSS Severity Distribution */}
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center">
-              <FileWarning className="h-5 w-5 text-red-500 mr-2" />
-              CVSS Vulnerability Distribution
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={cvssSeverity}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  >
-                    {cvssSeverity.map((entry, index) => (
-                      <PieCell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <PieTooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="mt-2 text-sm text-muted-foreground">
-              <p>
-                <span className="font-medium">Total vulnerabilities:</span> {cvssSeverity.reduce((sum, item) => sum + item.value, 0)}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* EOL Systems by Category */}
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center">
-              <ServerCrash className="h-5 w-5 text-orange-500 mr-2" />
-              End-of-Life Systems by Category
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={eolSystems}
-                  layout="vertical"
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <XAxis type="number" />
-                  <YAxis dataKey="name" type="category" width={150} />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="count" name="Number of Systems">
-                    {eolSystems.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="mt-2 text-sm text-muted-foreground">
-              <p>
-                <span className="font-medium">Total EOL systems:</span> {eolSystems.reduce((sum, item) => sum + item.count, 0)}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <VulnerabilityDistributionWidget cvssSeverity={cvssSeverity} />
+        <EOLSystemsWidget eolSystems={eolSystems} />
       </div>
 
       {/* Engineering Risk Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard 
-          title="Critical Patches Missing" 
-          value={engineeringRisks.criticalPatchesMissing} 
-          icon={<Plugin className="h-5 w-5 text-red-500" />} 
-          description="Systems with critical security patches missing" 
-        />
-        
-        <MetricCard 
-          title="High CVSS Vulnerabilities" 
-          value={engineeringRisks.highCvssVulnerabilities} 
-          icon={<FileWarning className="h-5 w-5 text-orange-500" />} 
-          description="Systems with CVSS score > 7.0" 
-        />
-        
-        <MetricCard 
-          title="EOL Systems" 
-          value={`${engineeringRisks.eolSystemsPercentage}%`} 
-          icon={<ServerCrash className="h-5 w-5 text-amber-500" />} 
-          description="Percentage of systems past end-of-life" 
-        />
-        
-        <MetricCard 
-          title="Unsupported Systems" 
-          value={engineeringRisks.unsupportedSystems} 
-          icon={<LifeBuoy className="h-5 w-5 text-purple-500" />} 
-          description="Systems without valid support contracts" 
-        />
-        
-        <MetricCard 
-          title="Avg. Vulnerability Age" 
-          value={`${engineeringRisks.averageVulnerabilityAge} days`} 
-          icon={<Clock className="h-5 w-5 text-blue-500" />} 
-          description="Average age of open vulnerabilities" 
-        />
-        
-        <MetricCard 
-          title="Dependency Vulnerabilities" 
-          value={engineeringRisks.dependencyVulnerabilities} 
-          icon={<AlertCircle className="h-5 w-5 text-indigo-500" />} 
-          description="Components with dependency issues" 
-        />
-        
-        <MetricCard 
-          title="Unmanaged Devices" 
-          value={engineeringRisks.unmanagedDevices} 
-          icon={<Network className="h-5 w-5 text-emerald-500" />} 
-          description="Devices without management agents" 
-        />
-      </div>
+      <EngineeringRiskMetrics engineeringRisks={engineeringRisks} />
 
       <div className="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-md">
         <p className="text-amber-800 text-sm font-medium">
@@ -455,28 +287,6 @@ const CISOReporting = () => {
         </p>
       </div>
     </div>
-  );
-};
-
-interface MetricCardProps {
-  title: string;
-  value: string | number;
-  icon: React.ReactNode;
-  description: string;
-}
-
-const MetricCard = ({ title, value, icon, description }: MetricCardProps) => {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        {icon}
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-        <p className="text-xs text-muted-foreground">{description}</p>
-      </CardContent>
-    </Card>
   );
 };
 
