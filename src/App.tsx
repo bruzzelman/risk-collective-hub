@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import TeamsManagement from "./pages/TeamsManagement";
 import ProductsManagement from "./pages/ServicesManagement";
+import ProductDetailViewer from "./components/ProductDetailViewer";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +52,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <ProductsManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/product-details/:productName"
+              element={
+                <ProtectedRoute>
+                  <ProductDetailViewer />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/product-details"
+              element={
+                <ProtectedRoute>
+                  <ProductDetailViewer productName="Minuet" />
                 </ProtectedRoute>
               }
             />

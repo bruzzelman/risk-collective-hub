@@ -81,7 +81,46 @@ export const useProductDetails = () => {
     };
   };
 
-  return { getProductDetails };
+  // New function to find a product by name
+  const findProductByName = (productName: string) => {
+    const product = services.find(s => s.name.toLowerCase() === productName.toLowerCase());
+    if (!product) {
+      console.log(`Product "${productName}" not found`);
+      return null;
+    }
+
+    const division = divisions.find(d => d.id === product.division_id);
+    const team = teams.find(t => t.id === product.team_id);
+
+    return {
+      id: product.id,
+      name: product.name,
+      description: product.description || "",
+      division: division?.name || "Unknown Division",
+      divisionId: product.division_id,
+      team: team?.name || "Unknown Team",
+      teamId: product.team_id,
+      createdAt: product.created_at,
+      createdBy: product.created_by
+    };
+  };
+
+  // Function to get risk assessments for a specific product
+  const getProductRiskAssessments = async (productId: string) => {
+    const { data, error } = await supabase
+      .from('risk_assessments')
+      .select('*')
+      .eq('service_id', productId);
+    
+    if (error) {
+      console.error('Error fetching risk assessments:', error);
+      throw error;
+    }
+    
+    return data;
+  };
+
+  return { getProductDetails, findProductByName, getProductRiskAssessments };
 };
 
 // For backward compatibility
