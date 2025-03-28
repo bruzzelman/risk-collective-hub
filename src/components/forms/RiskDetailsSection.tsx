@@ -75,6 +75,18 @@ export const RiskDetailsSection = ({ form }: RiskDetailsSectionProps) => {
         type="number"
         min={0}
       />
+
+      <SelectField
+        form={form}
+        name="mitigativeControlsImplemented"
+        label="Are mitigative controls implemented?"
+        placeholder="Select if mitigative controls are implemented"
+        options={[
+          { value: "", label: "Unknown" },
+          { value: "yes", label: "Yes" },
+          { value: "no", label: "No" },
+        ]}
+      />
     </>
   );
 };

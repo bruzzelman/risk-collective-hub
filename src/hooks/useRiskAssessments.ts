@@ -49,13 +49,11 @@ export const useRiskAssessments = (userId: string | undefined) => {
           hasLocalRevenueImpact: assessment.has_local_revenue_impact,
           localRevenueImpactHours: assessment.local_revenue_impact_hours,
           hoursToRemediate: assessment.hours_to_remediate,
+          postMortemHours: assessment.post_mortem_hours,
           additionalLossEventCosts: assessment.additional_loss_event_costs,
           piDataAtRisk: assessment.pi_data_at_risk as PIDataAtRisk || "no",
           piDataAmount: assessment.pi_data_amount as PIDataAmount,
-          // Use a type assertion with 'as any' first to safely check if the property exists
-          mitigativeControlsImplemented: Object.prototype.hasOwnProperty.call(assessment as any, 'mitigative_controls_implemented')
-            ? ((assessment as any).mitigative_controls_implemented as MitigativeControls)
-            : "" as MitigativeControls,
+          mitigativeControlsImplemented: assessment.mitigative_controls_implemented as MitigativeControls || "",
         };
       });
     },

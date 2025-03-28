@@ -32,7 +32,7 @@ const RiskAssessmentForm = ({ onSubmit, initialValues }: RiskAssessmentFormProps
       dataInterface: "Not applicable",
       dataLocation: "Not applicable", // Keep this to satisfy the type
       mitigativeControlsImplemented: "" as const,
-      postMortemHours: 0, // Default value for the new field
+      postMortemHours: 0, // Default value for the field
       ...(initialValues || {}), // Make sure initialValues override defaults
     },
   });
