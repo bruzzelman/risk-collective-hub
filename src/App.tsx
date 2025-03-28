@@ -27,7 +27,7 @@ const App = () => (
               path="/"
               element={
                 <ProtectedRoute>
-                  <Index />
+                  <ProductDetailViewer productName="Minuet" />
                 </ProtectedRoute>
               }
             />
