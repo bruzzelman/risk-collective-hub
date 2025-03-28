@@ -55,7 +55,7 @@ export const RiskDetailsSection = ({ form }: RiskDetailsSectionProps) => {
       <TextField
         form={form}
         name="hoursToRemediate"
-        label="Hours to remediate"
+        label="Time to restore in hours"
         type="number"
         min={0}
       />
