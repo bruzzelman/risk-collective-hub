@@ -82,8 +82,10 @@ export type Database = {
           likelihood_per_year: number
           local_revenue_impact_hours: number | null
           mitigation: string
+          mitigative_controls_implemented: string | null
           pi_data_amount: string | null
           pi_data_at_risk: string
+          post_mortem_hours: number | null
           revenue_impact: string
           risk_category: string
           risk_description: string
@@ -107,8 +109,10 @@ export type Database = {
           likelihood_per_year?: number
           local_revenue_impact_hours?: number | null
           mitigation: string
+          mitigative_controls_implemented?: string | null
           pi_data_amount?: string | null
           pi_data_at_risk?: string
+          post_mortem_hours?: number | null
           revenue_impact?: string
           risk_category: string
           risk_description: string
@@ -132,8 +136,10 @@ export type Database = {
           likelihood_per_year?: number
           local_revenue_impact_hours?: number | null
           mitigation?: string
+          mitigative_controls_implemented?: string | null
           pi_data_amount?: string | null
           pi_data_at_risk?: string
+          post_mortem_hours?: number | null
           revenue_impact?: string
           risk_category?: string
           risk_description?: string
