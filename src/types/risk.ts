@@ -60,6 +60,7 @@ export type RiskAssessment = {
   hasLocalRevenueImpact: boolean;
   localRevenueImpactHours?: number;
   hoursToRemediate?: number;
+  postMortemHours?: number;
   additionalLossEventCosts?: number;
   piDataAtRisk: PIDataAtRisk;
   piDataAmount?: PIDataAmount;

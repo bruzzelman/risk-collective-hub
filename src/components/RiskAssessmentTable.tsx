@@ -1,4 +1,3 @@
-
 import {
   Table,
   TableBody,
@@ -79,6 +78,7 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
         pi_data_at_risk: data.piDataAtRisk || 'no',
         pi_data_amount: data.piDataAmount,
         hours_to_remediate: data.hoursToRemediate,
+        post_mortem_hours: data.postMortemHours,
         additional_loss_event_costs: data.additionalLossEventCosts,
         mitigative_controls_implemented: data.mitigativeControlsImplemented || ''
       };

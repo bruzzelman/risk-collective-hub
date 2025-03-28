@@ -50,6 +50,7 @@ export const useRiskAssessmentSubmit = (
           pi_data_at_risk: dataToSubmit.piDataAtRisk,
           pi_data_amount: dataToSubmit.piDataAmount,
           hours_to_remediate: dataToSubmit.hoursToRemediate,
+          post_mortem_hours: dataToSubmit.postMortemHours,
           additional_loss_event_costs: dataToSubmit.additionalLossEventCosts,
           mitigative_controls_implemented: dataToSubmit.mitigativeControlsImplemented,
           created_by: user.id

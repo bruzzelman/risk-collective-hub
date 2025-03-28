@@ -62,6 +62,14 @@ export const RiskDetailsSection = ({ form }: RiskDetailsSectionProps) => {
 
       <TextField
         form={form}
+        name="postMortemHours"
+        label="Additional time in hours (post-mortem meetings, follow-up tasks et.c)"
+        type="number"
+        min={0}
+      />
+
+      <TextField
+        form={form}
         name="additionalLossEventCosts"
         label="Additional loss event costs (€)"
         type="number"
