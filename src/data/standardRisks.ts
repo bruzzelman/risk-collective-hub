@@ -1,6 +1,6 @@
 export const standardRisks = [
   {
-    name: "An administrator unintentionally deletes core infrastructure which has a direct impact on revenue.",
+    name: "Administrator unintentionally introduces significant bug into production software",
     category: "Error",
     description: "Production bug introduced by administrative error",
     lossEventCategory: "Execution, Delivery & Process Management"
