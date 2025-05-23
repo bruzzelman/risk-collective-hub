@@ -9,8 +9,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import TeamsManagement from "./pages/TeamsManagement";
-import ProductsManagement from "./pages/ServicesManagement";
-import ProductDetailViewer from "./components/ProductDetailViewer";
+import ServicesManagement from "./pages/ServicesManagement";
 
 const queryClient = new QueryClient();
 
@@ -27,7 +26,7 @@ const App = () => (
               path="/"
               element={
                 <ProtectedRoute>
-                  <ProductDetailViewer productName="Minuet" />
+                  <Index />
                 </ProtectedRoute>
               }
             />
@@ -43,31 +42,7 @@ const App = () => (
               path="/services"
               element={
                 <ProtectedRoute>
-                  <ProductsManagement />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/products"
-              element={
-                <ProtectedRoute>
-                  <ProductsManagement />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/product-details/:productName"
-              element={
-                <ProtectedRoute>
-                  <ProductDetailViewer />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/product-details"
-              element={
-                <ProtectedRoute>
-                  <ProductDetailViewer productName="Minuet" />
+                  <ServicesManagement />
                 </ProtectedRoute>
               }
             />

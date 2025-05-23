@@ -1,3 +1,4 @@
+
 import {
   Table,
   TableBody,
@@ -17,10 +18,9 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { useProductDetails } from "@/hooks/useServiceDetails";
+import { useServiceDetails } from "@/hooks/useServiceDetails";
 import RiskAssessmentTableRow from "./RiskAssessmentTableRow";
 import RiskAssessmentEditDialog from "./RiskAssessmentEditDialog";
-import { useAuth } from "@/components/AuthProvider";
 
 interface RiskAssessmentTableProps {
   assessments: RiskAssessment[];
@@ -31,129 +31,65 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
   const [editingAssessment, setEditingAssessment] = useState<RiskAssessment | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { getProductDetails } = useProductDetails();
-  const { user } = useAuth();
+  const { getServiceDetails } = useServiceDetails();
 
   const handleEdit = (assessment: RiskAssessment) => {
-    console.log('Editing assessment:', assessment);
     setEditingAssessment(assessment);
   };
 
   const handleEditSubmit = async (data: Omit<RiskAssessment, "id" | "createdAt">) => {
-    if (!editingAssessment) {
-      console.error('No editing assessment found');
-      return;
-    }
-
-    if (!user?.email) {
-      console.error('User email not found');
-      toast({
-        title: "Error",
-        description: "User information not available",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    console.log('Submitting updated data:', data);
-    console.log('Original assessment:', editingAssessment);
+    if (!editingAssessment) return;
 
     try {
-      const updateData = {
-        service_id: data.serviceId,
-        risk_category: data.riskCategory,
-        risk_description: data.riskDescription,
-        data_interface: data.dataInterface || 'Not applicable',
-        data_location: data.dataLocation || 'Not applicable', // Keep this to satisfy the database schema
-        likelihood_per_year: data.likelihoodPerYear || 1,
-        risk_level: data.riskLevel || 'low',
-        mitigation: data.mitigation || '',
-        data_classification: data.dataClassification || 'Internal',
-        risk_owner: user.email, // Always use current user's email
-        revenue_impact: data.revenueImpact || 'unclear',
-        has_global_revenue_impact: data.hasGlobalRevenueImpact || false,
-        global_revenue_impact_hours: data.globalRevenueImpactHours,
-        has_local_revenue_impact: data.hasLocalRevenueImpact || false,
-        local_revenue_impact_hours: data.localRevenueImpactHours,
-        pi_data_at_risk: data.piDataAtRisk || 'no',
-        pi_data_amount: data.piDataAmount,
-        hours_to_remediate: data.hoursToRemediate,
-        post_mortem_hours: data.postMortemHours,
-        additional_loss_event_costs: data.additionalLossEventCosts,
-        mitigative_controls_implemented: data.mitigativeControlsImplemented || ''
-      };
-
-      console.log('Sending update with data:', updateData);
-
-      const { data: updatedData, error } = await supabase
+      const { error } = await supabase
         .from('risk_assessments')
-        .update(updateData)
-        .eq('id', editingAssessment.id)
-        .select('*');
+        .update({
+          service_id: data.serviceId,
+          risk_category: data.riskCategory,
+          risk_description: data.riskDescription,
+          data_interface: data.dataInterface,
+          data_location: data.dataLocation,
+          likelihood_per_year: data.likelihoodPerYear,
+          risk_level: data.riskLevel,
+          mitigation: data.mitigation,
+          data_classification: data.dataClassification,
+          risk_owner: data.riskOwner,
+          has_global_revenue_impact: data.hasGlobalRevenueImpact,
+          global_revenue_impact_hours: data.globalRevenueImpactHours,
+          has_local_revenue_impact: data.hasLocalRevenueImpact,
+          local_revenue_impact_hours: data.localRevenueImpactHours,
+        })
+        .eq('id', editingAssessment.id);
 
-      if (error) {
-        console.error('Supabase error:', error);
-        throw error;
-      }
-
-      console.log('Update successful:', updatedData);
-
-      // Force a hard refresh of the risk assessments query
-      await queryClient.invalidateQueries({ 
-        queryKey: ['riskAssessments'],
-        refetchType: 'active',
-        exact: true
-      });
-      
-      // Force an immediate refetch
-      await queryClient.refetchQueries({ 
-        queryKey: ['riskAssessments'],
-        exact: true
-      });
+      if (error) throw error;
 
       toast({
         title: "Success",
         description: "Risk assessment updated successfully",
       });
 
+      queryClient.invalidateQueries({ queryKey: ['riskAssessments'] });
       setEditingAssessment(null);
     } catch (error) {
-      console.error('Error updating risk assessment:', error);
       toast({
         title: "Error",
-        description: "Failed to update risk assessment. Please check the console for details.",
+        description: "Failed to update risk assessment",
         variant: "destructive",
       });
     }
   };
 
   const filteredAssessments = assessments.filter((assessment) => {
-    const productDetails = getProductDetails(assessment.serviceId);
+    const serviceDetails = getServiceDetails(assessment.serviceId);
     return (
       Object.values(assessment).some((value) =>
         value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
       ) ||
-      productDetails.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      productDetails.division.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      productDetails.team.toLowerCase().includes(searchTerm.toLowerCase())
+      serviceDetails.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      serviceDetails.division.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      serviceDetails.team.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
-
-  // If there are no assessments at all, show a message
-  if (!assessments.length) {
-    return (
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Risk Assessments</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8 text-gray-500">
-            No risk assessments found. Please add a product and create a risk assessment.
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <>
@@ -174,27 +110,29 @@ const RiskAssessmentTable = ({ assessments }: RiskAssessmentTableProps) => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Product Name</TableHead>
+                  <TableHead>Service Name</TableHead>
                   <TableHead>Division</TableHead>
                   <TableHead>Team</TableHead>
                   <TableHead>Loss event description</TableHead>
                   <TableHead>Loss event category</TableHead>
                   <TableHead>Data Interface</TableHead>
+                  <TableHead>Data Location</TableHead>
                   <TableHead>Likelihood (%/year)</TableHead>
+                  <TableHead>Risk Owner</TableHead>
                   <TableHead>Date Added</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredAssessments.map((assessment) => {
-                  const productDetails = getProductDetails(assessment.serviceId);
+                  const serviceDetails = getServiceDetails(assessment.serviceId);
                   return (
                     <RiskAssessmentTableRow
                       key={assessment.id}
                       assessment={assessment}
-                      serviceName={productDetails.name}
-                      divisionName={productDetails.division}
-                      teamName={productDetails.team}
+                      serviceName={serviceDetails.name}
+                      divisionName={serviceDetails.division}
+                      teamName={serviceDetails.team}
                       onEdit={handleEdit}
                     />
                   );

@@ -1,19 +1,13 @@
 
-import { UseFormReturn, useWatch } from "react-hook-form";
-import { RiskAssessment, PIDataAtRisk, PIDataAmount } from "@/types/risk";
+import { UseFormReturn } from "react-hook-form";
+import { RiskAssessment } from "@/types/risk";
 import { TextField } from "./TextField";
-import { SelectField } from "./SelectField";
 
 interface RiskDetailsSectionProps {
   form: UseFormReturn<Omit<RiskAssessment, "id" | "createdAt">>;
 }
 
 export const RiskDetailsSection = ({ form }: RiskDetailsSectionProps) => {
-  const piDataAtRisk = useWatch({
-    control: form.control,
-    name: "piDataAtRisk",
-  }) as PIDataAtRisk;
-
   return (
     <>
       <TextField
@@ -26,44 +20,10 @@ export const RiskDetailsSection = ({ form }: RiskDetailsSectionProps) => {
         required
       />
 
-      <SelectField
-        form={form}
-        name="piDataAtRisk"
-        label="PI data at risk"
-        placeholder="Select if PI data is at risk"
-        options={[
-          { value: "no", label: "No" },
-          { value: "yes", label: "Yes" },
-        ]}
-      />
-
-      {piDataAtRisk === "yes" && (
-        <SelectField
-          form={form}
-          name="piDataAmount"
-          label="Amount of PI data at risk"
-          placeholder="Select amount of PI data at risk"
-          options={[
-            { value: "less_than_1m", label: "Less than 1,000,000 rows" },
-            { value: "between_1m_and_99m", label: "Between 1,000,000 and 99,000,000 rows" },
-            { value: "more_than_99m", label: "More than 90,000,000 rows" },
-            { value: "unknown", label: "Unknown" },
-          ]}
-        />
-      )}
-
       <TextField
         form={form}
         name="hoursToRemediate"
-        label="Time to recover in hours"
-        type="number"
-        min={0}
-      />
-
-      <TextField
-        form={form}
-        name="postMortemHours"
-        label="Additional time in hours (post-mortem meetings, follow-up tasks et.c)"
+        label="Hours to remediate"
         type="number"
         min={0}
       />
@@ -75,18 +35,7 @@ export const RiskDetailsSection = ({ form }: RiskDetailsSectionProps) => {
         type="number"
         min={0}
       />
-
-      <SelectField
-        form={form}
-        name="mitigativeControlsImplemented"
-        label="Are mitigative controls implemented?"
-        placeholder="Select if mitigative controls are implemented"
-        options={[
-          { value: "", label: "Unknown" },
-          { value: "yes", label: "Yes" },
-          { value: "no", label: "No" },
-        ]}
-      />
     </>
   );
 };
+

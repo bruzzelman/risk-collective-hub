@@ -27,7 +27,9 @@ const RiskAssessmentTableRow = ({
       <TableCell>{assessment.riskDescription}</TableCell>
       <TableCell>{assessment.riskCategory}</TableCell>
       <TableCell>{assessment.dataInterface}</TableCell>
+      <TableCell>{assessment.dataLocation}</TableCell>
       <TableCell>{assessment.likelihoodPerYear}%</TableCell>
+      <TableCell>{assessment.riskOwner}</TableCell>
       <TableCell>{assessment.createdAt.toLocaleDateString()}</TableCell>
       <TableCell>
         <Button

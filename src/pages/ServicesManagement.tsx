@@ -1,5 +1,4 @@
-
-import { useProducts } from "@/hooks/useServices";
+import { useServices } from "@/hooks/useServices";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -21,7 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Service } from "@/types/risk";
 import { useQuery } from "@tanstack/react-query";
 
-type ProductFormData = Pick<Service, "name" | "description"> & {
+type ServiceFormData = Pick<Service, "name" | "description"> & {
   divisionId?: string;
   teamId?: string;
 };
@@ -197,10 +196,10 @@ const DEFAULT_RISK_ASSESSMENTS = [
   }
 ];
 
-const ProductsManagement = () => {
-  const { data: services = [], refetch } = useProducts();
+const ServicesManagement = () => {
+  const { data: services = [], refetch } = useServices();
   const [open, setOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Service | null>(null);
+  const [editingService, setEditingService] = useState<Service | null>(null);
   const { toast } = useToast();
 
   // Fetch divisions for the dropdown
@@ -227,7 +226,7 @@ const ProductsManagement = () => {
     },
   });
 
-  const form = useForm<ProductFormData>({
+  const form = useForm<ServiceFormData>({
     defaultValues: {
       name: "",
       description: "",
@@ -236,11 +235,11 @@ const ProductsManagement = () => {
     },
   });
 
-  const createDefaultRiskAssessments = async (productId: string, divisionId: string | undefined, userId: string) => {
+  const createDefaultRiskAssessments = async (serviceId: string, divisionId: string | undefined, userId: string) => {
     try {
       const riskAssessments = DEFAULT_RISK_ASSESSMENTS.map(assessment => ({
         ...assessment,
-        service_id: productId,
+        service_id: serviceId,
         division_id: divisionId,
         created_by: userId,
       }));
@@ -256,10 +255,10 @@ const ProductsManagement = () => {
     }
   };
 
-  const onSubmit = async (data: ProductFormData) => {
+  const onSubmit = async (data: ServiceFormData) => {
     try {
-      if (editingProduct) {
-        // Update existing product
+      if (editingService) {
+        // Update existing service
         const { error } = await supabase
           .from("services")
           .update({
@@ -268,20 +267,20 @@ const ProductsManagement = () => {
             division_id: data.divisionId,
             team_id: data.teamId,
           })
-          .eq("id", editingProduct.id);
+          .eq("id", editingService.id);
 
         if (error) throw error;
 
         toast({
           title: "Success",
-          description: "Product updated successfully",
+          description: "Service updated successfully",
         });
       } else {
-        // Create new product
+        // Create new service
         const userId = (await supabase.auth.getUser()).data.user?.id;
         if (!userId) throw new Error("User not authenticated");
 
-        const { data: newProduct, error } = await supabase
+        const { data: newService, error } = await supabase
           .from("services")
           .insert([{
             name: data.name,
@@ -295,36 +294,36 @@ const ProductsManagement = () => {
 
         if (error) throw error;
 
-        // Create default risk assessments for the new product
-        await createDefaultRiskAssessments(newProduct.id, data.divisionId, userId);
+        // Create default risk assessments for the new service
+        await createDefaultRiskAssessments(newService.id, data.divisionId, userId);
 
         toast({
           title: "Success",
-          description: "Product and default risk assessments created successfully",
+          description: "Service and default risk assessments created successfully",
         });
       }
       
       form.reset();
       setOpen(false);
-      setEditingProduct(null);
+      setEditingService(null);
       refetch();
     } catch (error) {
-      console.error("Error saving product:", error);
+      console.error("Error saving service:", error);
       toast({
         title: "Error",
-        description: "Failed to save product",
+        description: "Failed to save service",
         variant: "destructive",
       });
     }
   };
 
-  const handleEdit = (product: Service) => {
-    setEditingProduct(product);
+  const handleEdit = (service: Service) => {
+    setEditingService(service);
     form.reset({
-      name: product.name,
-      description: product.description,
-      divisionId: product.divisionId,
-      teamId: product.teamId,
+      name: service.name,
+      description: service.description,
+      divisionId: service.divisionId,
+      teamId: service.teamId,
     });
     setOpen(true);
   };
@@ -340,15 +339,15 @@ const ProductsManagement = () => {
 
       toast({
         title: "Success",
-        description: "Product deleted successfully",
+        description: "Service deleted successfully",
       });
       
       refetch();
     } catch (error) {
-      console.error("Error deleting product:", error);
+      console.error("Error deleting service:", error);
       toast({
         title: "Error",
-        description: "Failed to delete product",
+        description: "Failed to delete service",
         variant: "destructive",
       });
     }
@@ -356,7 +355,7 @@ const ProductsManagement = () => {
 
   const handleDialogClose = (open: boolean) => {
     if (!open) {
-      setEditingProduct(null);
+      setEditingService(null);
       form.reset({
         name: "",
         description: "",
@@ -370,24 +369,24 @@ const ProductsManagement = () => {
   return (
     <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Products Management</h1>
+        <h1 className="text-2xl font-bold">Services Management</h1>
         <Dialog open={open} onOpenChange={handleDialogClose}>
           <DialogTrigger asChild>
             <Button>
               <PlusIcon className="mr-2 h-4 w-4" />
-              Add Product
+              Add Service
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{editingProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
+              <DialogTitle>{editingService ? 'Edit Service' : 'Add New Service'}</DialogTitle>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <TextField
                   form={form}
                   name="name"
-                  label="Product Name"
+                  label="Service Name"
                   required
                 />
                 <TextField
@@ -417,7 +416,7 @@ const ProductsManagement = () => {
                   }))}
                 />
                 <Button type="submit">
-                  {editingProduct ? 'Update Product' : 'Create Product'}
+                  {editingService ? 'Update Service' : 'Create Service'}
                 </Button>
               </form>
             </Form>
@@ -436,13 +435,13 @@ const ProductsManagement = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {services.map((product) => {
-            const division = divisions.find(d => d.id === product.divisionId);
-            const team = teams.find(t => t.id === product.teamId);
+          {services.map((service) => {
+            const division = divisions.find(d => d.id === service.divisionId);
+            const team = teams.find(t => t.id === service.teamId);
             return (
-              <TableRow key={product.id}>
-                <TableCell>{product.name}</TableCell>
-                <TableCell>{product.description}</TableCell>
+              <TableRow key={service.id}>
+                <TableCell>{service.name}</TableCell>
+                <TableCell>{service.description}</TableCell>
                 <TableCell>{division?.name || 'Not assigned'}</TableCell>
                 <TableCell>{team?.name || 'Not assigned'}</TableCell>
                 <TableCell>
@@ -450,14 +449,14 @@ const ProductsManagement = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleEdit(product)}
+                      onClick={() => handleEdit(service)}
                     >
                       <PencilIcon className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="destructive"
                       size="sm"
-                      onClick={() => handleDelete(product.id)}
+                      onClick={() => handleDelete(service.id)}
                     >
                       <Trash2Icon className="h-4 w-4" />
                     </Button>
@@ -472,4 +471,4 @@ const ProductsManagement = () => {
   );
 };
 
-export default ProductsManagement;
+export default ServicesManagement;
